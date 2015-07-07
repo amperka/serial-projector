@@ -1,6 +1,5 @@
 
 body {
-    background-color: #00979C;
     position: relative;
 }
 
@@ -11,8 +10,6 @@ body {
 }
 
 h1 {
-    color: white;
-    font-size: 10vw;
     text-align: center;
     display: inline-block;
     vertical-align: middle;

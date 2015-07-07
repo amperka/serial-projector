@@ -36,4 +36,8 @@ $(function() {
     $('body').click(function() {
         $('#settings').hide();
     });
+
+    $('#settings input').each(function() {
+        $(this).change();
+    });
 });
