@@ -4,6 +4,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <script src="jquery-2.1.4.min.js"></script>
         <script src="main.js"></script>
+        <script src="settings.js"></script>
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
@@ -12,5 +13,33 @@
         </div>
 
         <div class="status">⚉</div>
+        <div class="invoke-settings">⚙</div>
+
+        <aside id="settings">
+            <table>
+                <tbody>
+                    <tr>
+                        <th><label for="font-size">Font Size:</label></th>
+                        <td><input  id="font-size" type="number" name="font-size" min="1" max="100"></td>
+                        <td>vw</td>
+                    </tr>
+                    <tr>
+                        <th><label for="text-color">Text Color:</label></th>
+                        <td><input  id="text-color" type="color" name="text-color"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th><label for="bg-color">Background Color:</label></th>
+                        <td><input  id="bg-color" type="color" name="bg-color"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td><button id="apply-settings">Apply</button></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </aside>
     </body>
 </html>

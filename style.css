@@ -27,6 +27,48 @@ h1 {
     color: #333;
 }
 
+.invoke-settings {
+    position: absolute;
+    font-size: 24px;
+    right: 40px;
+    bottom: 10px;
+    color: #333;
+}
+
 .connected {
     color: #0f0;
+}
+
+#settings {
+    display: none;
+    position: absolute;
+    width: 300px;
+    padding: 20px;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background-color: #ffe;
+    font-size: 15px;
+}
+
+#settings input {
+    padding: 3px;
+    border: 1px solid #999;
+    border-radius: 3px;
+    font-size: 15px;
+}
+
+#settings table {
+    width: 100%;
+}
+
+#settings th,
+#settings td {
+    padding: 5px 3px;
+}
+
+#settings th {
+    text-align: left;
+    white-space: nowrap;
+    font-weight: normal;
 }
