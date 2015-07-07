@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <script src="jquery-2.1.4.min.js"></script>
         <script src="main.js"></script>
         <style>
-            html {
-                height: 100%;
-            }
-
             body {
                 background-color: #00979C;
-                height: 100%;
+                position: relative;
             }
 
             #wrap {
@@ -27,11 +24,25 @@
                 vertical-align: middle;
                 line-height: normal;
             }
+
+            .status {
+                position: absolute;
+                font-size: 24px;
+                right: 10px;
+                bottom: 10px;
+                color: #333;
+            }
+
+            .connected {
+                color: #0f0;
+            }
         </style>
     </head>
     <body>
         <div id="wrap">
             <h1>Hello, world!</h1>
         </div>
+
+        <div class="status">⚉</div>
     </body>
 </html>
