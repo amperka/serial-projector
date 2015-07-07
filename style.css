@@ -1,0 +1,32 @@
+
+body {
+    background-color: #00979C;
+    position: relative;
+}
+
+#wrap {
+    text-align: center;
+    height: 100vh;
+    line-height: 100vh;
+}
+
+h1 {
+    color: white;
+    font-size: 10vw;
+    text-align: center;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: normal;
+}
+
+.status {
+    position: absolute;
+    font-size: 24px;
+    right: 10px;
+    bottom: 10px;
+    color: #333;
+}
+
+.connected {
+    color: #0f0;
+}
