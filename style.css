@@ -16,7 +16,7 @@ h1 {
     line-height: normal;
 }
 
-.status {
+#menu {
     position: absolute;
     font-size: 24px;
     right: 10px;
@@ -24,12 +24,13 @@ h1 {
     color: #333;
 }
 
-.invoke-settings {
-    position: absolute;
-    font-size: 24px;
-    right: 40px;
-    bottom: 10px;
-    color: #333;
+#menu div {
+    display: inline;
+}
+
+#menu div:hover {
+    color: #fff;
+    cursor: pointer;
 }
 
 .connected {

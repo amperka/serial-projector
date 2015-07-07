@@ -92,3 +92,15 @@ $(function() {
 
     tryConnect();
 });
+
+$(function() {
+    $('.fullscreen').click(function(e) {
+        e.preventDefault();
+        var w = chrome.app.window.current();
+        if (w.isFullscreen()) {
+            w.restore();
+        } else {
+            w.fullscreen();
+        }
+    });
+});

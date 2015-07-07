@@ -1,5 +1,5 @@
 chrome.app.runtime.onLaunched.addListener(function() {
-    chrome.app.window.create('window.html', {
+    var w =chrome.app.window.create('window.html', {
         'id': 'monitor',
         'outerBounds': {
             'width': 400,
@@ -7,4 +7,5 @@ chrome.app.runtime.onLaunched.addListener(function() {
         }
     });
 
+    w.fullscreen();
 });
