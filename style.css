@@ -42,13 +42,14 @@ h1 {
 #settings {
     display: none;
     position: absolute;
-    width: 300px;
-    padding: 20px;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    background-color: #ffe;
+    padding: 10px;
+    bottom: 40px;
+    right: 10px;
+    background-color: white;
     font-size: 15px;
+
+    border: 2px solid black;
+    border-radius: 10px;
 }
 
 #settings input {

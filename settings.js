@@ -25,6 +25,15 @@ $(function() {
 
     $('.invoke-settings').click(function(e) {
         e.preventDefault();
-        $('#settings').show();
+        e.stopPropagation();
+        $('#settings').toggle(0);
+    });
+
+    $('#settings').click(function(e) {
+        e.stopPropagation();
+    });
+
+    $('body').click(function() {
+        $('#settings').hide();
     });
 });
