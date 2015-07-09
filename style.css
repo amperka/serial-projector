@@ -41,13 +41,15 @@ h1 {
 #menu .btn-status           { background-image: url('chrome-extension://__MSG_@@extension_id__/img/chain-broken_000000_32.png'); }
 #menu .btn-status.connected { background-image: url('chrome-extension://__MSG_@@extension_id__/img/link_000000_32.png'); }
 #menu .btn-settings         { background-image: url('chrome-extension://__MSG_@@extension_id__/img/cog_000000_32.png'); }
+#menu .btn-about            { background-image: url('chrome-extension://__MSG_@@extension_id__/img/amperka_000000_32.png'); }
 
 #menu.light .btn-fullscreen       { background-image: url('chrome-extension://__MSG_@@extension_id__/img/desktop_ffffff_32.png'); }
 #menu.light .btn-status           { background-image: url('chrome-extension://__MSG_@@extension_id__/img/chain-broken_ffffff_32.png'); }
 #menu.light .btn-status.connected { background-image: url('chrome-extension://__MSG_@@extension_id__/img/link_ffffff_32.png'); }
 #menu.light .btn-settings         { background-image: url('chrome-extension://__MSG_@@extension_id__/img/cog_ffffff_32.png'); }
+#menu.light .btn-about            { background-image: url('chrome-extension://__MSG_@@extension_id__/img/amperka_ffffff_32.png'); }
 
-#settings {
+.popup {
     display: none;
     position: absolute;
     padding: 10px;
@@ -58,6 +60,10 @@ h1 {
 
     border: 2px solid black;
     border-radius: 10px;
+}
+
+#about {
+    width: 250px;
 }
 
 #settings input {

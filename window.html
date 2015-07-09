@@ -5,6 +5,7 @@
         <script src="jquery-2.1.4.min.js"></script>
         <script src="main.js"></script>
         <script src="settings.js"></script>
+        <script src="about.js"></script>
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
@@ -16,9 +17,10 @@
             <div class="btn btn-fullscreen"></div>
             <div class="btn btn-status"></div>
             <div class="btn btn-settings"></div>
+            <div class="btn btn-about"></div>
         </aside>
 
-        <aside id="settings">
+        <aside id="settings" class="popup">
             <table>
                 <tbody>
                     <tr>
@@ -43,6 +45,18 @@
                     </tr>
                 </tbody>
             </table>
+        </aside>
+
+        <aside id="about" class="popup">
+            <p>
+                Chromium Serial Monitor was made by <a href="http://amperka.ru" target="_blank">Amperka LLC</a>. From Russia with Love :-*
+            </p>
+            <p>
+                Icons by <a href="http://fortawesome.github.io/Font-Awesome/" target="_blank">Font Awesome</a>.
+            </p>
+            <p>
+                Application is distributed as is without any warranties on terms of General Public License.
+            </p>
         </aside>
     </body>
 </html>
