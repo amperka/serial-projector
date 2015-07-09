@@ -42,7 +42,7 @@ var buffer = new Uint8Array(0);
 
 function onConnect(connectionInfo) {
     buffer = new Uint8Array(0);
-    $('.status').addClass('connected');
+    $('.btn-status').addClass('connected');
 }
 
 function setText(txt) {
@@ -69,7 +69,7 @@ function retryConnect() {
 
 function onReceiveError(info) {
     setText(info.error);
-    $('.status').removeClass('connected');
+    $('.btn-status').removeClass('connected');
     retryConnect();
 }
 
@@ -94,7 +94,7 @@ $(function() {
 });
 
 $(function() {
-    $('.fullscreen').click(function(e) {
+    $('.btn-fullscreen').click(function(e) {
         e.preventDefault();
         var w = chrome.app.window.current();
         if (w.isFullscreen()) {
