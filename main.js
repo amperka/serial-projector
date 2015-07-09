@@ -46,7 +46,7 @@ function onConnect(connectionInfo) {
 }
 
 function setText(txt) {
-    $('h1').text(txt);
+    $('h1').html(txt);
 }
 
 function onReceive(receiveInfo) {
@@ -76,7 +76,7 @@ function onReceiveError(info) {
 function tryConnect() {
     chrome.serial.getDevices(function(ports) {
         if (!ports.length) {
-            setText("No device found >:(");
+            setText("No device found :(");
             retryConnect();
             return;
         }
