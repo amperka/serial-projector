@@ -1,11 +1,13 @@
 {
-  "name": "Chrome Serial Monitor",
-  "description": "Show one line of serial. Yay!",
-  "version": "0.1",
   "manifest_version": 2,
+  "name": "Serial Projector",
+  "description": "Easily show last line of text got from serial port.",
+  "version": "0.2",
+  "author": "Victor Nakoryakov, Amperka LLC",
+  "homepage_url": "https://github.com/amperka/serial-projector",
   "app": {
     "background": {
-      "scripts": ["background.js",  "jquery-2.1.4.min.js"]
+      "scripts": ["background.js"]
     }
   },
   "icons": { 
