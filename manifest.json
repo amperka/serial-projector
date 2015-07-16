@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Serial Projector",
   "description": "Easily show last line of text got from serial port.",
-  "version": "0.2",
+  "version": "1.0",
   "author": "Victor Nakoryakov, Amperka LLC",
   "app": {
     "background": {

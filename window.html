@@ -3,7 +3,10 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <script src="jquery-2.1.4.min.js"></script>
+        <script src="underscore.js"></script>
+        <script src="backbone.js"></script>
         <script src="main.js"></script>
+        <script src="connection.js"></script>
         <script src="settings.js"></script>
         <script src="about.js"></script>
         <link rel="stylesheet" type="text/css" href="style.css">
@@ -15,13 +18,47 @@
 
         <aside id="menu">
             <div class="btn btn-fullscreen"></div>
-            <div class="btn btn-status"></div>
+            <div class="btn btn-connection"></div>
             <div class="btn btn-settings"></div>
             <div class="btn btn-about"></div>
         </aside>
 
+        <aside id="connection" class="popup">
+            <table class="form">
+                <tbody>
+                    <tr>
+                        <th><label for="port">Port:</label></th>
+                        <td>
+                            <select id="port" name="port">
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="bitrate">Bit Rate:</label></th>
+                        <td>
+                            <select id="bitrate" name="bitrate">
+                                <option value="9600" selected>9600</option>
+                                <option value="19200">19200</option>
+                                <option value="38400">38400</option>
+                                <option value="57600">57600</option>
+                                <option value="115200">115200</option>
+                            </select>
+                            baud
+                        </td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td>
+                            <button id="connect">Connect</button>
+                            <button id="stop-connection">Stop</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </aside>
+
         <aside id="settings" class="popup">
-            <table>
+            <table class="form">
                 <tbody>
                     <tr>
                         <th><label for="font-size">Font Size:</label></th>
