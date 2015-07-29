@@ -55,4 +55,25 @@ $(function() {
             w.fullscreen();
         }
     });
+
+    $( document ).keyup(function(e) {
+        var code = e.keyCode || e.which;
+        switch(code){
+            case 122:
+                $('#menu .btn-fullscreen').trigger('click');
+            break;
+            case 121:
+                $('#menu .btn-settings').trigger('click');
+            break;
+            case 112:
+                $('#menu .btn-about').trigger('click');
+            break;
+            case 67:
+                $('#menu .btn-connection').trigger('click');
+            break;
+            case 32:
+                $('#connection button:visible').trigger('click');
+            break;
+        }
+    });
 });
