@@ -47,6 +47,34 @@
                         </td>
                     </tr>
                     <tr>
+                        <th><label for="dataBits">Data Bits:</label></th>
+                        <td>
+                            <select id="dataBits" name="dataBits">
+                                <option value="seven">Seven</option>
+                                <option value="eight" selected>Eight</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="parityBit">Parity Bit:</label></th>
+                        <td>
+                            <select id="parityBit" name="parityBit">
+                                <option value="no" selected>No</option>
+                                <option value="odd">Odd</option>
+                                <option value="even">Even</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="stopBits">Stop Bits:</label></th>
+                        <td>
+                            <select id="stopBits" name="stopBits">
+                                <option value="one" selected>One</option>
+                                <option value="two">Two</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
                         <th></th>
                         <td>
                             <button id="connect" title="Turn autoconnection on [Space]">Connect</button>

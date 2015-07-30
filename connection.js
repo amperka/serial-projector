@@ -11,6 +11,9 @@ var Connection = Backbone.Model.extend({
         connectionId: null,
         path: null,
         bitrate: 9600,
+        dataBits: 'eight',
+        parityBit: 'no',
+        stopBits: 'one',
         autoConnect: undefined,
         ports: [],
         buffer: null,
@@ -50,11 +53,17 @@ var Connection = Backbone.Model.extend({
         }
 
         var path = this.get('path');
-        var bitrate = this.get('bitrate');
 
         if (path) {
             var self = this;
-            chrome.serial.connect(path, {bitrate: bitrate}, function(connectionInfo) {
+            var opts = {
+                bitrate: this.get('bitrate'),
+                dataBits: this.get('dataBits'),
+                parityBit: this.get('parityBit'),
+                stopBits: this.get('stopBits'),
+            }
+
+            chrome.serial.connect(path, opts, function(connectionInfo) {
                 self.set('buffer', new Uint8Array(0));
                 self.set('connectionId', connectionInfo.connectionId);
             });
@@ -137,7 +146,7 @@ $(function() {
         for (var i = 0; i < ports.length; ++i) {
             var port = ports[i];
             $('<option value="' + port.path + '">' +
-              port.path + ' ' + port.displayName + '</option>').appendTo($port);
+              port.path + ' ' + (port.displayName || '') + '</option>').appendTo($port);
         }
 
         if (ports.length == 0) {
@@ -153,7 +162,7 @@ $(function() {
         $('#stop-connection').toggle(autoConnect);
         $('#connect').toggle(!autoConnect);
         $('#port').prop('disabled', autoConnect || !c.hasPorts());
-        $('#bitrate').prop('disabled', autoConnect);
+        $('#bitrate, #dataBits, #parityBit, #stopBits').prop('disabled', autoConnect);
     });
 
     connection.on('change:path', function(c) {
@@ -190,8 +199,11 @@ $(function() {
     });
 
     $('#bitrate').change(function(e) {
-        e.preventDefault();
         connection.set('bitrate', parseInt($(this).val()));
+    });
+
+    $('#dataBits, #parityBit, #stopBits').change(function(e) {
+        connection.set($(this).attr('name'), $(this).val());
     });
 
     $('#stop-connection').click(function(e) {
