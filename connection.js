@@ -189,6 +189,11 @@ $(function() {
         connection.autoConnect(true);
     });
 
+    $('#bitrate').change(function(e) {
+        e.preventDefault();
+        connection.set('bitrate', parseInt($(this).val()));
+    });
+
     $('#stop-connection').click(function(e) {
         e.preventDefault();
         connection.autoConnect(false);
