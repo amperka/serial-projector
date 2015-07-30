@@ -39,6 +39,8 @@ void loop()
 
 Use buttons at the bottom right corner to adjust application settings.
 
+[Demo video](http://www.youtube.com/watch?v=JpcsKiafKZ8#t=2m00s) is available on YouTube.
+
 Authors and License
 -------------------
 
