@@ -56,24 +56,24 @@ $(function() {
         }
     });
 
-    $( document ).keyup(function(e) {
-        var code = e.keyCode || e.which;
-        switch(code){
-            case 122:
+    $(document).keyup(function(e) {
+        switch (e.which) {
+            case 122: // F11
+            case 70:  // F
                 $('#menu .btn-fullscreen').trigger('click');
-            break;
-            case 121:
+                break;
+            case 121: // F10
                 $('#menu .btn-settings').trigger('click');
-            break;
-            case 112:
+                break;
+            case 112: // F1
                 $('#menu .btn-about').trigger('click');
-            break;
-            case 67:
+                break;
+            case 67: // C
                 $('#menu .btn-connection').trigger('click');
-            break;
-            case 32:
+                break;
+            case 32: // Space
                 $('#connection button:visible').trigger('click');
-            break;
+                break;
         }
     });
 });
