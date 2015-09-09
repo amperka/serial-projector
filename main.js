@@ -41,7 +41,18 @@ function findLineBreak(b) {
     }
 }
 
+function handleBackspaces(s) {
+    var len;
+    do {
+        len = s.length;
+        s = s.replace(/[^\x08]\x08/, '');
+    } while (s.length != len);
+
+    return s;
+}
+
 function setText(txt) {
+    txt = handleBackspaces(txt);
     $('h1').html(txt);
 }
 
