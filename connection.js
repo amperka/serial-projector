@@ -102,7 +102,18 @@ var Connection = Backbone.Model.extend({
             }
         }
 
-        this.set('path', ports[0].path);
+        // We have to auto-choose any port. Use first
+        // one but try to guess better on Mac
+        var portIdx = 0;
+        for (var i = 0; i < ports.length; ++i) {
+            var port = ports[i];
+            if (port.path.indexOf('/dev/cu.usbmodem') === 0) {
+                portIdx = i;
+                break;
+            }
+        }
+
+        this.set('path', ports[portIdx].path);
     },
 
     _onReceive: function(receiveInfo) {
@@ -196,6 +207,10 @@ $(function() {
     $('#connect').click(function(e) {
         e.preventDefault();
         connection.autoConnect(true);
+    });
+
+    $('#port').change(function(e) {
+        connection.set('path', $(this).val());
     });
 
     $('#bitrate').change(function(e) {
