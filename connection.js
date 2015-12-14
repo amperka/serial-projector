@@ -65,7 +65,19 @@ var Connection = Backbone.Model.extend({
 
             chrome.serial.connect(path, opts, function(connectionInfo) {
                 self.set('buffer', new Uint8Array(0));
-                self.set('connectionId', connectionInfo.connectionId);
+                if (connectionInfo) {
+                  self.set('connectionId', connectionInfo.connectionId);
+                } else {
+                  self.set('connectionId', null);
+                  self.set('autoConnect', false);
+                  self.set('error',
+                      'Connection failed' + 
+                      '<div style="font-size: 0.25em">' + 
+                      'Can\'t open serial port ' + path +
+                      '.<br>Possibly it is already in use ' +
+                      'by another application.' +
+                      '</div>');
+                }
             });
         } else {
             this.enumeratePorts();
