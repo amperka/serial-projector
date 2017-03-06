@@ -2,13 +2,13 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <script src="ace.js"></script>
+        <script src="worker-html.js"></script>
+        <script src="mode-html.js"></script>
         <script src="jquery-2.1.4.min.js"></script>
         <script src="underscore.js"></script>
+        <script src="mustache.min.js"></script>
         <script src="backbone.js"></script>
-        <script src="main.js"></script>
-        <script src="connection.js"></script>
-        <script src="settings.js"></script>
-        <script src="about.js"></script>
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
@@ -20,6 +20,7 @@
             <div class="btn btn-fullscreen" title="Fullscreen [F11 or F]"></div>
             <div class="btn btn-connection" title="Connection [C]"></div>
             <div class="btn btn-settings" title="Settings [F10]"></div>
+            <div class="btn btn-code" title="View code [F11]"></div>
             <div class="btn btn-about" title="About [F1]"></div>
         </aside>
 
@@ -112,6 +113,25 @@
             </table>
         </aside>
 
+        <aside id="code" class="popup">
+            <div id="editor-container">
+                <div id="editor"></div>
+            </div>
+            <table>
+                <tr>
+                    <td>
+                        <button id="update">Update template</button>
+                    </td>
+                    <td>
+                        <select id="platform">
+                            <option value="arduino">Arduino like</option>
+                            <option value="espruino" selected>Espruino like</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </aside>
+
         <aside id="about" class="popup">
             <p>
                 Serial Projector is made by <a href="http://amperka.ru" target="_blank">Amperka LLC</a>. From Russia with Love :-*
@@ -124,5 +144,10 @@
                 <a href="https://github.com/amperka/serial-projector" target="_blank">Source code</a> is available on GitHub.
             </p>
         </aside>
+        <script src="main.js"></script>
+        <script src="connection.js"></script>
+        <script src="settings.js"></script>
+        <script src="code.js"></script>
+        <script src="about.js"></script>
     </body>
 </html>

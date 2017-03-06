@@ -18,7 +18,9 @@ var Connection = Backbone.Model.extend({
         ports: [],
         buffer: null,
         text: '...',
-        error: '',
+        error: null,
+        json: {},
+        html: 'Hello, world!'
     },
 
     initialize: function() {
@@ -67,6 +69,7 @@ var Connection = Backbone.Model.extend({
                 self.set('buffer', new Uint8Array(0));
                 if (connectionInfo) {
                   self.set('connectionId', connectionInfo.connectionId);
+                  self.set('error', null);
                 } else {
                   self.set('connectionId', null);
                   self.set('autoConnect', false);
@@ -135,9 +138,11 @@ var Connection = Backbone.Model.extend({
 
         var lbr = findLineBreak(this.get('buffer'));
         if (lbr !== undefined) {
-            var txt = this.get('buffer').slice(0, lbr);
+            var txt = this.get('buffer').slice(0, lbr),
+                text = uintToString(txt);
             this.set('buffer', this.get('buffer').slice(lbr + 1));
-            this.set('text', uintToString(txt));
+            this.set('text', text);
+            this.set('json', serializeData(handleBackspaces(text)));
         }
     },
 
@@ -148,18 +153,33 @@ var Connection = Backbone.Model.extend({
     }
 });
 
+var ConnectionView = Backbone.View.extend({
+    el: 'h1',
+
+    initialize: function() {
+        var button = $('update');
+
+        this.listenTo(this.model, 'change', this.render);
+    },
+
+    render: function() {
+        try {
+            var json = this.model.get('json'),
+                html = this.model.get('html'),
+                error = this.model.get('error'),
+                template = Mustache.to_html(html, json);
+
+            if (error) return this.$el.html(error);
+            return this.$el.html(template);
+        } catch (e) {
+            return this.$el.html(e);
+        }
+    },
+});
+
 $(function() {
     var connection = new Connection();
-
-    connection.on('change:text', function(c) {
-        var text = c.get('text');
-        setText(text);
-    });
-
-    connection.on('change:error', function(c) {
-        var text = c.get('error');
-        setText(text);
-    });
+    var connectionView = new ConnectionView({model:connection});
 
     connection.on('change:ports', function(c) {
         var ports = c.get('ports');
@@ -236,6 +256,10 @@ $(function() {
     $('#stop-connection').click(function(e) {
         e.preventDefault();
         connection.autoConnect(false);
+    });
+
+    $('#update').click(function() {
+        connection.set({html: editor.getValue()});
     });
 
     connection.autoConnect(true);

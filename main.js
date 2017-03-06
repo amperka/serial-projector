@@ -46,14 +46,29 @@ function handleBackspaces(s) {
     do {
         len = s.length;
         s = s.replace(/[^\x08]\x08/, '');
+        s = s.replace(/^\x08/, '');
     } while (s.length != len);
 
     return s;
 }
 
-function setText(txt) {
-    txt = handleBackspaces(txt);
-    $('h1').html(txt);
+function serializeData(s) {
+    var platform = $('#platform').val();
+
+    switch (platform) {
+        case 'arduino':
+            var object = {},
+                items = s.split(';');
+
+            items.forEach(function(item) {
+                var [key, value] = item.split('|');
+                object[key] = value;
+            });
+
+            return object;
+        case 'espruino':
+            return JSON.parse(s);
+    }
 }
 
 $(function() {
@@ -76,6 +91,8 @@ $(function() {
             case 121: // F10
                 $('#menu .btn-settings').trigger('click');
                 break;
+            case 122: // F11
+                $('#menu .btn-code').trigger('click');
             case 112: // F1
                 $('#menu .btn-about').trigger('click');
                 break;
@@ -88,3 +105,6 @@ $(function() {
         }
     });
 });
+
+let editor = ace.edit("editor");
+editor.getSession().setMode("ace/mode/html");
