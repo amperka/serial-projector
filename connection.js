@@ -141,7 +141,7 @@ var Connection = Backbone.Model.extend({
             var txt = this.get('buffer').slice(0, lbr),
                 text = uintToString(txt);
             this.set('buffer', this.get('buffer').slice(lbr + 1));
-            this.set('text', text);
+            this.set('text', handleBackspaces(text));
             this.set('json', serializeData(handleBackspaces(text)));
         }
     },
@@ -164,13 +164,21 @@ var ConnectionView = Backbone.View.extend({
 
     render: function() {
         try {
-            var json = this.model.get('json'),
-                html = this.model.get('html'),
-                error = this.model.get('error'),
-                template = Mustache.to_html(html, json);
+            var text = this.model.get('text'),
+                enable = $('#template-use').prop('checked'),
+                error = this.model.get('error');
 
             if (error) return this.$el.html(error);
-            return this.$el.html(template);
+
+            if (enable) {
+                var json = this.model.get('json'),
+                    html = this.model.get('html'),
+                    template = Mustache.to_html(html, json);
+
+                return this.$el.html(template);
+            } else {
+                return this.$el.html(text);
+            }
         } catch (e) {
             return this.$el.html(e);
         }
