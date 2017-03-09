@@ -157,15 +157,13 @@ var ConnectionView = Backbone.View.extend({
     el: 'h1',
 
     initialize: function() {
-        var button = $('update');
-
         this.listenTo(this.model, 'change', this.render);
     },
 
     render: function() {
         try {
             var text = this.model.get('text'),
-                enable = $('#template-use').prop('checked'),
+                enable = $('#use').prop('checked'),
                 error = this.model.get('error');
 
             if (error) return this.$el.html(error);
@@ -186,8 +184,13 @@ var ConnectionView = Backbone.View.extend({
 });
 
 $(function() {
-    var connection = new Connection();
-    var connectionView = new ConnectionView({model:connection});
+    var connection = new Connection(),
+        connectionView = new ConnectionView({model:connection});
+
+    loadSettings(function(data) {
+        connection.set({html: data});
+        editor.setValue(data);
+    });
 
     connection.on('change:ports', function(c) {
         var ports = c.get('ports');
@@ -267,7 +270,22 @@ $(function() {
     });
 
     $('#update').click(function() {
-        connection.set({html: editor.getValue()});
+        var object = {html: editor.getValue()};
+
+        connection.set(object);
+        setSetting(object);
+    });
+
+    $('#use').change(function(e) {
+        var checked = $(e.target).prop('checked');
+
+        setSetting({use: checked});
+    });
+
+    $('#platform').change(function(e) {
+        var platform = $(e.target).val();
+
+        setSetting({mode: platform});
     });
 
     connection.autoConnect(true);

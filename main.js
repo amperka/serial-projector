@@ -71,6 +71,25 @@ function serializeData(s) {
     }
 }
 
+function loadSettings(callback) {
+    var storage = chrome.storage.sync;
+
+    storage.get(['mode', 'use', 'html'], function(data) {
+        var storageMode = _.get(data, 'mode', 'arduino'),
+            storageUse = _.get(data, 'use', false),
+            storageHtml = _.get(data, 'html', 'Hello, world!');
+
+        $('#platform').val(storageMode);
+        $('#use').attr('checked', storageUse);
+
+        return callback(storageHtml);
+    });
+}
+
+function setSetting(object) {
+    return chrome.storage.sync.set(object);
+}
+
 $(function() {
     $('.btn-fullscreen').click(function(e) {
         e.preventDefault();
@@ -107,5 +126,5 @@ $(function() {
     });
 });
 
-let editor = ace.edit("editor");
+var editor = ace.edit("editor");
 editor.getSession().setMode("ace/mode/html");
