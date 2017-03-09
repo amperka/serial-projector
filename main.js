@@ -91,8 +91,9 @@ $(function() {
             case 121: // F10
                 $('#menu .btn-settings').trigger('click');
                 break;
-            case 122: // F11
+            case 113: // F2
                 $('#menu .btn-code').trigger('click');
+                break;
             case 112: // F1
                 $('#menu .btn-about').trigger('click');
                 break;
