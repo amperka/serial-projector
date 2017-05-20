@@ -17,7 +17,7 @@ var Connection = Backbone.Model.extend({
         autoConnect: undefined,
         ports: [],
         buffer: null,
-        text: '...',
+        text: 'Hello, world!',
         error: null,
         json: {},
         html: 'Hello, world!'
