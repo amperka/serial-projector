@@ -2,13 +2,13 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <script src="jquery-2.1.4.min.js"></script>
-        <script src="underscore.js"></script>
-        <script src="backbone.js"></script>
-        <script src="main.js"></script>
-        <script src="connection.js"></script>
-        <script src="settings.js"></script>
-        <script src="about.js"></script>
+        <script src="lib/ace.js"></script>
+        <script src="lib/worker-html.js"></script>
+        <script src="lib/mode-html.js"></script>
+        <script src="lib/jquery.min.js"></script>
+        <script src="lib/lodash.js"></script>
+        <script src="lib/mustache.min.js"></script>
+        <script src="lib/backbone.js"></script>
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
@@ -17,9 +17,10 @@
         </div>
 
         <aside id="menu">
-            <div class="btn btn-fullscreen" title="Fullscreen [F11 or F]"></div>
-            <div class="btn btn-connection" title="Connection [C]"></div>
+            <div class="btn btn-fullscreen" title="Fullscreen [F11]"></div>
+            <div class="btn btn-connection" title="Connection [F3]"></div>
             <div class="btn btn-settings" title="Settings [F10]"></div>
+            <div class="btn btn-code" title="View code [F2]"></div>
             <div class="btn btn-about" title="About [F1]"></div>
         </aside>
 
@@ -112,6 +113,28 @@
             </table>
         </aside>
 
+        <aside id="code" class="popup">
+            <div id="editor-container">
+                <div id="editor"></div>
+            </div>
+            <table>
+                <tr>
+                    <td>
+                        <button id="update">Update template</button>
+                    </td>
+                    <td>
+                        <select id="platform">
+                            <option value="arduino">Arduino like</option>
+                            <option value="espruino">Espruino like</option>
+                        </select>
+                    </td>
+                    <td>
+                         <input type="checkbox" id="use">Use template
+                    </td>
+                </tr>
+            </table>
+        </aside>
+
         <aside id="about" class="popup">
             <p>
                 Serial Projector is made by <a href="http://amperka.ru" target="_blank">Amperka LLC</a>. From Russia with Love :-*
@@ -124,5 +147,11 @@
                 <a href="https://github.com/amperka/serial-projector" target="_blank">Source code</a> is available on GitHub.
             </p>
         </aside>
+
+        <script src="src/main.js"></script>
+        <script src="src/connection.js"></script>
+        <script src="src/settings.js"></script>
+        <script src="src/code.js"></script>
+        <script src="src/about.js"></script>
     </body>
 </html>

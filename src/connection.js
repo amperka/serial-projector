@@ -17,8 +17,10 @@ var Connection = Backbone.Model.extend({
         autoConnect: undefined,
         ports: [],
         buffer: null,
-        text: '...',
-        error: '',
+        text: 'Hello, world!',
+        error: null,
+        json: {},
+        html: 'Hello, world!'
     },
 
     initialize: function() {
@@ -67,6 +69,7 @@ var Connection = Backbone.Model.extend({
                 self.set('buffer', new Uint8Array(0));
                 if (connectionInfo) {
                   self.set('connectionId', connectionInfo.connectionId);
+                  self.set('error', null);
                 } else {
                   self.set('connectionId', null);
                   self.set('autoConnect', false);
@@ -135,9 +138,11 @@ var Connection = Backbone.Model.extend({
 
         var lbr = findLineBreak(this.get('buffer'));
         if (lbr !== undefined) {
-            var txt = this.get('buffer').slice(0, lbr);
+            var txt = this.get('buffer').slice(0, lbr),
+                text = uintToString(txt);
             this.set('buffer', this.get('buffer').slice(lbr + 1));
-            this.set('text', uintToString(txt));
+            this.set('text', handleBackspaces(text));
+            this.set('json', serializeData(handleBackspaces(text)));
         }
     },
 
@@ -148,17 +153,43 @@ var Connection = Backbone.Model.extend({
     }
 });
 
+var ConnectionView = Backbone.View.extend({
+    el: 'h1',
+
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render);
+    },
+
+    render: function() {
+        try {
+            var text = this.model.get('text'),
+                enable = $('#use').prop('checked'),
+                error = this.model.get('error');
+
+            if (error) return this.$el.html(error);
+
+            if (enable) {
+                var json = this.model.get('json'),
+                    html = this.model.get('html'),
+                    template = Mustache.to_html(html, json);
+
+                return this.$el.html(template);
+            } else {
+                return this.$el.html(text);
+            }
+        } catch (e) {
+            return this.$el.html(e);
+        }
+    },
+});
+
 $(function() {
-    var connection = new Connection();
+    var connection = new Connection(),
+        connectionView = new ConnectionView({model:connection});
 
-    connection.on('change:text', function(c) {
-        var text = c.get('text');
-        setText(text);
-    });
-
-    connection.on('change:error', function(c) {
-        var text = c.get('error');
-        setText(text);
+    loadSettings(function(data) {
+        connection.set({html: data});
+        editor.setValue(data);
     });
 
     connection.on('change:ports', function(c) {
@@ -236,6 +267,25 @@ $(function() {
     $('#stop-connection').click(function(e) {
         e.preventDefault();
         connection.autoConnect(false);
+    });
+
+    $('#update').click(function() {
+        var object = {html: editor.getValue()};
+
+        connection.set(object);
+        setSetting(object);
+    });
+
+    $('#use').change(function(e) {
+        var checked = $(e.target).prop('checked');
+
+        setSetting({use: checked});
+    });
+
+    $('#platform').change(function(e) {
+        var platform = $(e.target).val();
+
+        setSetting({mode: platform});
     });
 
     connection.autoConnect(true);

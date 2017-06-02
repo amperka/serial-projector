@@ -8,6 +8,19 @@ body {
     position: relative;
 }
 
+#editor-container {
+    position: relative;
+    margin: 15px 0;
+    width: 512px;
+    height: 256px;
+}
+
+#editor {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
 #wrap {
     text-align: center;
     height: 100vh;
@@ -46,12 +59,14 @@ h1 {
 #menu .btn-connection           { background-image: url('chrome-extension://__MSG_@@extension_id__/img/chain-broken_000000_32.png'); }
 #menu .btn-connection.connected { background-image: url('chrome-extension://__MSG_@@extension_id__/img/link_000000_32.png'); }
 #menu .btn-settings             { background-image: url('chrome-extension://__MSG_@@extension_id__/img/cog_000000_32.png'); }
+#menu .btn-code                 { background-image: url('chrome-extension://__MSG_@@extension_id__/img/code_000000_32.png'); }
 #menu .btn-about                { background-image: url('chrome-extension://__MSG_@@extension_id__/img/amperka_000000_32.png'); }
 
 #menu.light .btn-fullscreen           { background-image: url('chrome-extension://__MSG_@@extension_id__/img/desktop_ffffff_32.png'); }
 #menu.light .btn-connection           { background-image: url('chrome-extension://__MSG_@@extension_id__/img/chain-broken_ffffff_32.png'); }
 #menu.light .btn-connection.connected { background-image: url('chrome-extension://__MSG_@@extension_id__/img/link_ffffff_32.png'); }
 #menu.light .btn-settings             { background-image: url('chrome-extension://__MSG_@@extension_id__/img/cog_ffffff_32.png'); }
+#menu.light .btn-code                 { background-image: url('chrome-extension://__MSG_@@extension_id__/img/code_ffffff_32.png'); }
 #menu.light .btn-about                { background-image: url('chrome-extension://__MSG_@@extension_id__/img/amperka_ffffff_32.png'); }
 
 .popup {

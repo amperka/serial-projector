@@ -37,13 +37,16 @@ $(function() {
         switch (name) {
             case 'font-size':
                 $('h1').css('font-size', val + 'vw');
+                setSetting({font: val});
                 break;
 
             case 'text-color':
                 $('h1').css('color', val);
+                setSetting({text: val});
                 break;
 
             case 'bg-color':
+                setSetting({bg: val});
                 setBackgroundColor(val);
                 break;
         }
