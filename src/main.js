@@ -104,7 +104,6 @@ $(function() {
     $(document).keyup(function(e) {
         switch (e.which) {
             case 122: // F11
-            case 70:  // F
                 $('#menu .btn-fullscreen').trigger('click');
                 break;
             case 121: // F10
@@ -116,10 +115,10 @@ $(function() {
             case 112: // F1
                 $('#menu .btn-about').trigger('click');
                 break;
-            case 67: // C
+            case 114: // F3
                 $('#menu .btn-connection').trigger('click');
                 break;
-            case 32: // Space
+            case 115: // F4
                 $('#connection button:visible').trigger('click');
                 break;
         }
