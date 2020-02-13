@@ -29,8 +29,15 @@ function catBuffers(a, b) {
 }
 
 function uintToString(uintArray) {
-    var encodedString = String.fromCharCode.apply(null, uintArray),
-        decodedString = decodeURIComponent(escape(encodedString));
+    var rawString = String.fromCharCode.apply(null, uintArray),
+        processedString = removeEscSeq(rawString);
+    return processedString;
+}
+
+function removeEscSeq(rawString) {
+    //encode raw string to hex and remove escape sequence ">(zero or one times) CR ESC [ J"
+    var encodedString = encodeURIComponent(rawString).replace(/^(?:%3E)?%0D%1B%5BJ/gi, ""),
+        decodedString = decodeURIComponent(encodedString);
     return decodedString;
 }
 
