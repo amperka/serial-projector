@@ -29,7 +29,7 @@ function catBuffers(a, b) {
 }
 
 function uintToString(uintArray) {
-    var rawString = String.fromCharCode.apply(null, uintArray),
+    var rawString = new TextDecoder().decode(uintArray),
         processedString = removeEscSeq(rawString);
     return processedString;
 }
