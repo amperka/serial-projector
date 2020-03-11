@@ -33,7 +33,7 @@ void loop()
   int t = analogRead(A0) / 100;
   Serial.print("<div style='font-size: 0.2em'>Температура / Temperature</div>");
   Serial.print(t);
-  Serial.println(" °C");
+  Serial.println(" ℃");
 }
 ```
 
