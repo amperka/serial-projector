@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./src/js/connect.js"></script>
+    <script src="./src/js/background.js"></script>
+    <link rel="stylesheet" href="./src/styles/style_index.css">
+    <link rel="icon" href="./src/img/ico/projector.ico">
+    <title>Serial Projector Амперка</title>
+</head>
+<body>
+  <nav>
+    <!-- Serial projector settings -->
+    <div class="options">
+      <label for="baudrate">Baud rate:</label>
+      <select id="baudrate">
+        <option value="9600" selected>9600</option>
+        <option value="19200">19220</option>
+        <option value="38400">38400</option>
+        <option value="57600">57600</option>
+        <option value="115200">115200</option>
+      </select>
+
+      <label for="parity">Parity Bit:</label>
+      <select id="parityBit" name="parityBit">
+        <option value="none" selected>No</option>
+        <option value="odd">Odd</option>
+        <option value="even">Even</option>
+      </select>
+
+      <button onclick="requestDevice()">Connect</button>
+
+      <br>
+      <br>
+
+      <table class="form">
+        <tbody>
+          <tr>
+            <th><label for="font-size">Font Size:</label></th>
+            <td><input id="font-size" type="number" name="font-size" min="1" max="100" value="10"></td>
+            <td>vw</td>
+            <td></td>
+            <th><label for="text-color">Text Color:</label></th>
+            <td><input id="text-color" type="color" name="text-color" value="#ffffff"></td>
+            <td></td>
+
+            <th><label for="bg-color">BG Color:</label></th>
+            <td><input id="bg-color" type="color" name="bg-color" value="#00979c"></td>
+            <td></td>
+
+            <th></th>
+            <td><button id="apply-settings">Apply</button></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+    </div>
+  </nav>
+
+  <!-- the main content of the page -->
+  <main>
+    <div id="wrap">
+      <h1>Hello, world!</h1>
+    </div>
+  </main>
+
+  <!-- bottom of the page -->
+  <footer>
+    <p>Serial Projector is made by <a href="http://amperka.ru"target="_blank">Amperka LLC</a>. From Russia with Love :-*</p>
+    <p>
+      Application is distributed as is without any warranties on terms of MIT License.
+      <a href="https://github.com/amperka/serial-projector" target="_blank">Source code</a> is available on GitHub.
+    </p>
+    <address>
+      Is something not working for you? <a href="https://amperka.ru/page/service-center">Write to us</a>.
+    </address>
+  </footer>
+</body>
+</html>
