@@ -1,0 +1,15 @@
+body {
+    position: relative;
+}
+
+.header{
+    text-align: center;
+    font-size: 32px;
+    color: rgb(255, 165, 0);
+}
+
+.text{
+    text-align: center;
+    font-size: 28px;
+    color: rgba(255, 166, 0, 0.5);
+}

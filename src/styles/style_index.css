@@ -1,0 +1,50 @@
+body {
+    position: relative;
+}
+
+#wrap {
+    text-align: center;
+    height: 100vh;
+    line-height: 100vh;
+}
+
+h1 {
+    text-align: center;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: normal;
+}
+
+#menu {
+    position: absolute;
+    font-size: 24px;
+    right: 10px;
+    bottom: 10px;
+    color: #333;
+}
+
+#about {
+    width: 250px;
+}
+
+.options, table.form input {
+    padding: 3px;
+    border: 1px solid #999;
+    border-radius: 3px;
+    font-size: 15px;
+}
+
+table.form table {
+    width: 100%;
+}
+
+table.form th,
+table.form td {
+    padding: 5px 3px;
+}
+
+table.form th {
+    text-align: left;
+    white-space: nowrap;
+    font-weight: normal;
+}
