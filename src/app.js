@@ -82,8 +82,11 @@ class App {
     }
   }
 
-  async reconnect() {
+  cancelReconnect() {
     if (this._reconnectInterval) clearInterval(this._reconnectInterval);
+  }
+
+  async reconnect() {
     this._reconnectInterval = setInterval(async () => {
       try {
         await this.openPort();
@@ -99,6 +102,7 @@ class App {
     try {
       if (this._port) {
         if (this._reader) await this._reader.cancel();
+        this.cancelReconnect();
         await this._port.close();
       }
     } catch {
@@ -121,13 +125,13 @@ class App {
         buffer = parts.pop();
         for (const msg of parts) {
           this._ui.showMessage(msg);
+          console.log(`Received message: ${msg}`);
         }
       }
     } catch (e) {
       this._ui.showStatus(`Read failed: ${e}`);
       console.error(e);
     } finally {
-      this._reader.releaseLock();
       this._ui.showStatus("Disconnected (retrying...)");
       await this.reconnect();
     }
