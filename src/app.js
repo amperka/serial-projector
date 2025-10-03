@@ -1,5 +1,7 @@
 import { Settings } from "./settings.js";
 
+const LOCAL_STORAGE_LAST_CONNECTED_PORT_KEY = "lastPort";
+
 class App {
   /**
    * @param {import('./ui.js').AppUI} ui - UI instance
@@ -9,13 +11,13 @@ class App {
     this._loadSettingsOnStart();
 
     this._ui.setConnectBtnOnClick(async () => {
-      await this.closePort();
       try {
         await this.requestPort(true);
       } catch {
         return;
       }
       this._ui.closeSettingsModal();
+      await this.closePort();
       await this.openPort();
       await this.readLoop();
     });
@@ -26,6 +28,21 @@ class App {
       this._ui.settings.toSettings(),
     );
     this._ui.settings.fromSettings(this._settings);
+  }
+
+  /** @param {SerialPortInfo} info - Serial port info */
+  async _saveLastConnectedPort(info) {
+    localStorage.setItem(
+      LOCAL_STORAGE_LAST_CONNECTED_PORT_KEY,
+      JSON.stringify(info),
+    );
+  }
+
+  /** @returns {Promise<SerialPortInfo>} */
+  async _loadLastConnectedPort() {
+    return JSON.parse(
+      localStorage.getItem(LOCAL_STORAGE_LAST_CONNECTED_PORT_KEY) || "{}",
+    );
   }
 
   /** @param {boolean} [force] - Force port re-request */
@@ -49,6 +66,7 @@ class App {
     } catch {
       return;
     }
+
     try {
       await port.open({
         baudRate: this._settings.baudRate,
@@ -56,6 +74,8 @@ class App {
         parity: this._settings.parity,
         stopBits: this._settings.stopBits,
       });
+      this._saveLastConnectedPort(this._port.getInfo());
+      this._ui.showStatus("Connected");
     } catch (e) {
       this._ui.showStatus(`Port open failed: ${e}`);
       throw Error("Port open failed", e);
@@ -78,6 +98,7 @@ class App {
   async closePort() {
     try {
       if (this._port) {
+        if (this._reader) await this._reader.cancel();
         await this._port.close();
       }
     } catch {
@@ -86,32 +107,41 @@ class App {
   }
 
   async readLoop() {
-    this._ui.showStatus("Connected");
-    const reader = this._port.readable.getReader();
+    const port = await this.requestPort();
+    this._reader = port.readable.getReader();
     let buffer = "";
     try {
       while (true) {
-        const { value, done } = await reader.read();
-        buffer += new TextDecoder().decode(value);
+        const { value, done } = await this._reader.read();
+        if (done) break;
+        if (value) {
+          buffer += new TextDecoder().decode(value);
+        }
         const parts = buffer.split("\n");
         buffer = parts.pop();
         for (const msg of parts) {
           this._ui.showMessage(msg);
         }
-        if (done) break;
       }
     } catch (e) {
       this._ui.showStatus(`Read failed: ${e}`);
       console.error(e);
     } finally {
-      reader.releaseLock();
+      this._reader.releaseLock();
       this._ui.showStatus("Disconnected (retrying...)");
       await this.reconnect();
     }
   }
 
   async start() {
-    const ports = await navigator.serial.getPorts();
+    const prevPortInfo = await this._loadLastConnectedPort();
+    const ports = (await navigator.serial.getPorts()).filter((p) => {
+      const info = p.getInfo();
+      return Object.entries(prevPortInfo)
+        .map(([k, v]) => info[k] == v)
+        .every(Boolean);
+    });
+
     if (ports.length) {
       this._port = ports[0];
       try {
