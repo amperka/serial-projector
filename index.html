@@ -76,12 +76,22 @@
         </label>
         <label
           >Font size:
-          <input type="number" id="fontSize" min="1" max="100" step="1" value="10" />
+          <input
+            type="number"
+            id="fontSize"
+            min="1"
+            max="100"
+            step="1"
+            value="10"
+          />
         </label>
         <button id="closeStyle">Close</button>
       </div>
     </div>
 
-    <script src="main.js"></script>
+    <script type="module">
+      import { init } from "./main.js";
+      init();
+    </script>
   </body>
 </html>

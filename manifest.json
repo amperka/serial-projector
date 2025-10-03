@@ -2,12 +2,7 @@
   "name": "Web Serial Projector",
   "short_name": "SerialProjector",
   "description": "A simple web application that shows last line of text got from serial port with a big font.",
-  "categories": [
-    "developer",
-    "developer tools",
-    "eductaion",
-    "utilities"
-  ],
+  "categories": ["developer", "developer tools", "eductaion", "utilities"],
   "start_url": "./",
   "display": "standalone",
   "background_color": "#000000",

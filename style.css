@@ -1,63 +1,63 @@
 body {
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: #f6871f;
-    color: #fff;
-    font-family: sans-serif;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f6871f;
+  color: #fff;
+  font-family: sans-serif;
 }
 
 #message {
-    font-size: 10vh;
-    text-align: center;
-    word-break: break-word;
+  font-size: 10vh;
+  text-align: center;
+  word-break: break-word;
 }
 
 #status {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    font-size: 0.9em;
-    opacity: 0.7;
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  font-size: 0.9em;
+  opacity: 0.7;
 }
 
 #controls {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
 }
 
 #controls button {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    border-radius: 8px;
-    padding: 8px;
-    margin-left: 5px;
-    cursor: pointer;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  margin-left: 5px;
+  cursor: pointer;
 }
 
 .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
 }
 
 .modal-content {
-    background: #fff;
-    color: #000;
-    padding: 20px;
-    border-radius: 10px;
+  background: #fff;
+  color: #000;
+  padding: 20px;
+  border-radius: 10px;
 }
 
 .modal-content label {
-    display: block;
-    margin-bottom: 10px;
+  display: block;
+  margin-bottom: 10px;
 }

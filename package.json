@@ -2,6 +2,7 @@
   "name": "serial-projector",
   "version": "1.0.0",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "vite dev",
     "dev:browser": "vite dev --open=true",
