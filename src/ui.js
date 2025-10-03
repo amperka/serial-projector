@@ -220,7 +220,7 @@ class AppUI {
    * @param {AppUIRootElements} rootEl - HTML elements
    * @param {AppUISettingsElements} settingsEl - HTML elements
    */
-  constructor(rootEl, settingsEl, settingsSetCallback) {
+  constructor(rootEl, settingsEl) {
     this._rootEl = rootEl;
     this._rootEl.settingsBtn.onclick = this.openSettingsModal.bind(this);
     this._rootEl.settingsClose.onclick = this.closeSettingsModal.bind(this);

@@ -1,9 +1,8 @@
-import { AppUI } from "./ui.js";
 import { Settings } from "./settings.js";
 
 class App {
   /**
-   * @param {AppUI} ui - UI instance
+   * @param {import('./ui.js').AppUI} ui - UI instance
    */
   constructor(ui) {
     this._ui = ui;
@@ -36,7 +35,6 @@ class App {
     }
     try {
       this._port = await navigator.serial.requestPort();
-      const ports = await navigator.serial.getPorts();
     } catch (e) {
       this._ui.showStatus(`Port request canceled: ${e}`);
       throw Error("Port request canceled", e);
@@ -71,7 +69,9 @@ class App {
         await this.openPort();
         clearInterval(this._reconnectInterval);
         await this.readLoop();
-      } catch {}
+      } catch {
+        // continue regardless of error
+      }
     }, 5000);
   }
 
@@ -80,7 +80,9 @@ class App {
       if (this._port) {
         await this._port.close();
       }
-    } catch {}
+    } catch {
+      // continue regardless of error
+    }
   }
 
   async readLoop() {
