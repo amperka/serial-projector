@@ -1,28 +1,31 @@
-import { AppUIRootElements, AppUISettingsElements, AppUI } from "./ui.js";
+import { AppUI } from "./ui.js";
 import { App } from "./app.js";
 
-const uiRootElements = new AppUIRootElements(
-  document.getElementById("message"),
-  document.getElementById("status"),
-  document.getElementById("settingsBtn"),
-  document.getElementById("closeSettings"),
-  document.getElementById("settingsModal"),
-  document.getElementById("styleBtn"),
-  document.getElementById("closeStyle"),
-  document.getElementById("styleModal"),
-  document.getElementById("fullscreenBtn"),
-  document.getElementById("connectBtn"),
-);
-const uiSettingsElements = new AppUISettingsElements(
-  document.getElementById("bgColor"),
-  document.getElementById("textColor"),
-  document.getElementById("fontFamily"),
-  document.getElementById("fontSize"),
-  document.getElementById("baudRate"),
-  document.getElementById("dataBits"),
-  document.getElementById("parity"),
-  document.getElementById("stopBits"),
-);
+/** @type {import('./ui.js').AppUIRootElements} */
+const uiRootElements = {
+  msg: document.getElementById("message"),
+  status: document.getElementById("status"),
+  settingsBtn: document.getElementById("settingsBtn"),
+  settingsClose: document.getElementById("closeSettings"),
+  settingsModal: document.getElementById("settingsModal"),
+  styleBtn: document.getElementById("styleBtn"),
+  styleClose: document.getElementById("closeStyle"),
+  styleModal: document.getElementById("styleModal"),
+  fullscreenBtn: document.getElementById("fullscreenBtn"),
+  connectBtn: document.getElementById("connectBtn"),
+};
+
+/** @type {import('./ui.js').AppUISettingsElements} */
+const uiSettingsElements = {
+  bgColor: document.getElementById("bgColor"),
+  textColor: document.getElementById("textColor"),
+  fontFamily: document.getElementById("fontFamily"),
+  fontSize: document.getElementById("fontSize"),
+  baudRate: document.getElementById("baudRate"),
+  dataBits: document.getElementById("dataBits"),
+  parity: document.getElementById("parity"),
+  stopBits: document.getElementById("stopBits"),
+};
 
 async function init() {
   const ui = new AppUI(uiRootElements, uiSettingsElements);

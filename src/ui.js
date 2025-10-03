@@ -1,74 +1,30 @@
 import { Settings } from "./settings.js";
 
-class AppUIRootElements {
-  /**
-   * @param {HTMLElement} msgEl - Message HTML element
-   * @param {HTMLElement} statusEl - Status HTML element
-   * @param {HTMLElement} settingsBtnEl - Settings button HTML element
-   * @param {HTMLElement} settingsCloseEl - Close settings HTML element
-   * @param {HTMLElement} settingsModalEl - Settings modal HTML element
-   * @param {HTMLElement} styleBtnEl - Style button HTML element
-   * @param {HTMLElement} styleCloseEl - Close style HTML element
-   * @param {HTMLElement} styleModalEl - Style modal HTML element
-   * @param {HTMLElement} fullscreenBtnEl - Full screen button HTML element
-   * @param {HTMLElement} connectBtnEl - Connect button HTML element
-   */
-  constructor(
-    msgEl,
-    statusEl,
-    settingsBtnEl,
-    settingsCloseEl,
-    settingsModalEl,
-    styleBtnEl,
-    styleCloseEl,
-    styleModalEl,
-    fullscreenBtnEl,
-    connectBtnEl,
-  ) {
-    this.msg = msgEl;
-    this.status = statusEl;
-    this.settingsBtn = settingsBtnEl;
-    this.settingsClose = settingsCloseEl;
-    this.settingsModal = settingsModalEl;
-    this.styleBtn = styleBtnEl;
-    this.styleClose = styleCloseEl;
-    this.styleModal = styleModalEl;
-    this.fullscreenBtn = fullscreenBtnEl;
-    this.connectBtn = connectBtnEl;
-  }
-}
+/**
+ * @typedef {Object} AppUIRootElements
+ * @property {HTMLElement} msg - Message HTML element
+ * @property {HTMLElement} status - Status HTML element
+ * @property {HTMLElement} settingsBtn - Settings button HTML element
+ * @property {HTMLElement} settingsClose - Close settings HTML element
+ * @property {HTMLElement} settingsModal - Settings modal HTML element
+ * @property {HTMLElement} styleBtn - Style button HTML element
+ * @property {HTMLElement} styleClose - Close style HTML element
+ * @property {HTMLElement} styleModal - Style modal HTML element
+ * @property {HTMLElement} fullscreenBtn - Full screen button HTML element
+ * @property {HTMLElement} connectBtn - Connect button HTML element
+ */
 
-class AppUISettingsElements {
-  /**
-   * @param {HTMLElement} bgColor - Background color HTML element
-   * @param {HTMLElement} textColor - Text color HTML element
-   * @param {HTMLElement} fontFamily - Font family HTML element
-   * @param {HTMLElement} fontSize - Font size HTML element
-   * @param {HTMLElement} baudRate - Baud rate HTML element
-   * @param {HTMLElement} dataBits - Data bits HTML element
-   * @param {HTMLElement} parity - Parity HTML element
-   * @param {HTMLElement} stopBits - Stop bits HTML element
-   */
-  constructor(
-    bgColor,
-    textColor,
-    fontFamily,
-    fontSize,
-    baudRate,
-    dataBits,
-    parity,
-    stopBits,
-  ) {
-    this.bgColor = bgColor;
-    this.textColor = textColor;
-    this.fontFamily = fontFamily;
-    this.fontSize = fontSize;
-    this.baudRate = baudRate;
-    this.dataBits = dataBits;
-    this.parity = parity;
-    this.stopBits = stopBits;
-  }
-}
+/**
+ * @typedef {object} AppUISettingsElements
+ * @property {HTMLElement} bgColor - Background color HTML element
+ * @property {HTMLElement} textColor - Text color HTML element
+ * @property {HTMLElement} fontFamily - Font family HTML element
+ * @property {HTMLElement} fontSize - Font size HTML element
+ * @property {HTMLElement} baudRate - Baud rate HTML element
+ * @property {HTMLElement} dataBits - Data bits HTML element
+ * @property {HTMLElement} parity - Parity HTML element
+ * @property {HTMLElement} stopBits - Stop bits HTML element
+ */
 
 class AppUISettings {
   /**
@@ -284,4 +240,4 @@ class AppUI {
   }
 }
 
-export { AppUIRootElements, AppUISettingsElements, AppUISettings, AppUI };
+export { AppUISettings, AppUI };
