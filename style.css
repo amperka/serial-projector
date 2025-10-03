@@ -1,94 +1,63 @@
-/* Copyright (c) 2015, Amperka LLC
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE.txt file for details.
- */
-
 body {
-    position: relative;
-}
-
-#wrap {
-    text-align: center;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
-    line-height: 100vh;
+    background: #f6871f;
+    color: #fff;
+    font-family: sans-serif;
 }
 
-h1 {
+#message {
+    font-size: 10vh;
     text-align: center;
-    display: inline-block;
-    vertical-align: middle;
-    line-height: normal;
+    word-break: break-word;
 }
 
-#menu {
-    position: absolute;
-    font-size: 24px;
-    right: 10px;
+#status {
+    position: fixed;
     bottom: 10px;
-    color: #333;
+    left: 10px;
+    font-size: 0.9em;
+    opacity: 0.7;
 }
 
-#menu .btn {
-    display: inline-block;
-    margin-left: 10px;
-    width: 32px;
-    height: 32px;
-    opacity: 0.1;
-}
-
-#menu .btn:hover {
-    cursor: pointer;
-    opacity: 0.5;
-}
-
-#menu .btn-fullscreen           { background-image: url('chrome-extension://__MSG_@@extension_id__/img/desktop_000000_32.png'); }
-#menu .btn-connection           { background-image: url('chrome-extension://__MSG_@@extension_id__/img/chain-broken_000000_32.png'); }
-#menu .btn-connection.connected { background-image: url('chrome-extension://__MSG_@@extension_id__/img/link_000000_32.png'); }
-#menu .btn-settings             { background-image: url('chrome-extension://__MSG_@@extension_id__/img/cog_000000_32.png'); }
-#menu .btn-about                { background-image: url('chrome-extension://__MSG_@@extension_id__/img/amperka_000000_32.png'); }
-
-#menu.light .btn-fullscreen           { background-image: url('chrome-extension://__MSG_@@extension_id__/img/desktop_ffffff_32.png'); }
-#menu.light .btn-connection           { background-image: url('chrome-extension://__MSG_@@extension_id__/img/chain-broken_ffffff_32.png'); }
-#menu.light .btn-connection.connected { background-image: url('chrome-extension://__MSG_@@extension_id__/img/link_ffffff_32.png'); }
-#menu.light .btn-settings             { background-image: url('chrome-extension://__MSG_@@extension_id__/img/cog_ffffff_32.png'); }
-#menu.light .btn-about                { background-image: url('chrome-extension://__MSG_@@extension_id__/img/amperka_ffffff_32.png'); }
-
-.popup {
-    display: none;
-    position: absolute;
-    padding: 10px;
-    bottom: 64px;
+#controls {
+    position: fixed;
+    bottom: 10px;
     right: 10px;
-    background-color: white;
-    font-size: 15px;
+}
 
-    border: 2px solid black;
+#controls button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #fff;
+    color: #000;
+    padding: 20px;
     border-radius: 10px;
 }
 
-#about {
-    width: 250px;
-}
-
-table.form input {
-    padding: 3px;
-    border: 1px solid #999;
-    border-radius: 3px;
-    font-size: 15px;
-}
-
-table.form table {
-    width: 100%;
-}
-
-table.form th,
-table.form td {
-    padding: 5px 3px;
-}
-
-table.form th {
-    text-align: left;
-    white-space: nowrap;
-    font-weight: normal;
+.modal-content label {
+    display: block;
+    margin-bottom: 10px;
 }
