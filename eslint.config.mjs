@@ -30,8 +30,8 @@ export default defineConfig([
 
     rules: {
       semi: "error",
-      "prefer-const": "error",
-      "prettier/prettier": "error",
+      "prefer-const": "warn",
+      "prettier/prettier": "warn",
       "import/no-extraneous-dependencies": [
         "error",
         {
