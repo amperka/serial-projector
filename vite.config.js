@@ -55,6 +55,21 @@ export default defineConfig({
             purpose: "maskable",
           },
         ],
+        screenshots: [
+          {
+            src: "screenshots/home.png",
+            sizes: "1920x1080",
+            type: "image/png",
+            label: "Home screen",
+          },
+          {
+            src: "screenshots/home-wide.webp",
+            sizes: "1280x720",
+            type: "image/webp",
+            form_factor: "wide",
+            label: "Wide home screen",
+          },
+        ],
       },
     }),
   ],
