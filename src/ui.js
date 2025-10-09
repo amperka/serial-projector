@@ -1,7 +1,6 @@
-import { Settings } from "./settings.js";
-
 /**
- * @typedef {Object} AppUIRootElements
+ * @typedef {Object} AppHTMLElements
+ * @property {Document} doc - Root document
  * @property {HTMLElement} msg - Message HTML element
  * @property {HTMLElement} status - Status HTML element
  * @property {HTMLElement} settingsBtn - Settings button HTML element
@@ -12,10 +11,6 @@ import { Settings } from "./settings.js";
  * @property {HTMLElement} styleModal - Style modal HTML element
  * @property {HTMLElement} fullscreenBtn - Full screen button HTML element
  * @property {HTMLElement} connectBtn - Connect button HTML element
- */
-
-/**
- * @typedef {object} AppUISettingsElements
  * @property {HTMLElement} bgColor - Background color HTML element
  * @property {HTMLElement} textColor - Text color HTML element
  * @property {HTMLElement} fontFamily - Font family HTML element
@@ -26,218 +21,271 @@ import { Settings } from "./settings.js";
  * @property {HTMLElement} stopBits - Stop bits HTML element
  */
 
-class AppUISettings {
-  /**
-   * @param {HTMLElement} msgEl - Message HTML element
-   * @param {AppUISettingsElements} el - HTML elements
-   */
-  constructor(msgEl, el) {
-    this._msgEl = msgEl;
-    this._el = el;
-    el.bgColor.oninput = (e) => {
-      this.bgColor = e.target.value;
-    };
-    el.textColor.oninput = (e) => {
-      this.textColor = e.target.value;
-    };
-    el.fontFamily.onchange = (e) => {
-      this.fontFamily = e.target.value;
-    };
-    el.fontSize.onchange = (e) => {
-      this.fontSize = e.target.value;
-    };
-    el.baudRate.onchange = (e) => {
-      this.baudRate = e.target.value;
-    };
-    el.dataBits.onchange = (e) => {
-      this.dataBits = e.target.value;
-    };
-    el.parity.onchange = (e) => {
-      this.parity = e.target.value;
-    };
-    el.stopBits.onchange = (e) => {
-      this.stopBits = e.target.value;
-    };
+/**
+ * @typedef {import('./state.js').State} State
+ * @typedef {import('./state.js').StateContainer} StateContainer
+ */
+
+/**
+ * Checks if modal window is closed
+ * @param {HTMLElement} el
+ */
+const isModalClosed = (el) => ["", "none"].includes(el.style.display);
+
+/**
+ * Open modal
+ * @param {HTMLElement} el
+ */
+const openModal = (el) => {
+  el.style.display = "flex";
+};
+
+/**
+ * Close modal
+ * @param {HTMLElement} el
+ */
+const closeModal = (el) => {
+  el.style.display = "none";
+};
+
+/**
+ * Load state from DOM
+ * @param {AppHTMLElements} el
+ * @returns {State}
+ */
+const loadStateFromDOM = (el) => ({
+  bgColor: el.bgColor.value,
+  textColor: el.textColor.value,
+  fontFamily: el.fontFamily.value,
+  fontSize: +el.fontSize.value,
+  baudRate: +el.baudRate.value,
+  dataBits: +el.dataBits.value,
+  parity: el.parity.value,
+  stopBits: +el.stopBits.value,
+  isFullscreen: Boolean(el.doc.fullscreenElement),
+  isSettingsModalOpened: !isModalClosed(el.settingsModal),
+  isStyleModalOpened: !isModalClosed(el.styleModal),
+  message: el.msg.innerHTML,
+  status: el.status.innerText,
+});
+
+/**
+ * Render port settings
+ * @param {AppHTMLElements} el
+ * @param {State} state
+ * @param {State} oldState
+ */
+const renderPortSettings = (el, state, oldState) => {
+  if (state.baudRate !== oldState.baudRate) {
+    el.baudRate.value = state.baudRate;
   }
 
-  get bgColor() {
-    return this._el.bgColor.value;
+  if (state.dataBits !== oldState.dataBits) {
+    el.dataBits.value = state.dataBits;
   }
 
-  /** @param {string} color - Background color */
-  set bgColor(color) {
-    this._el.bgColor.value = color;
-    document.body.style.background = color;
-    this.toSettings().bgColor = color;
+  if (state.parity !== oldState.parity) {
+    el.parity.value = state.parity;
   }
 
-  get textColor() {
-    return this._el.textColor.value;
+  if (state.stopBits !== oldState.stopBits) {
+    el.stopBits.value = state.stopBits;
+  }
+};
+
+/**
+ * Bind port settings elements
+ * @param {AppHTMLElements} el
+ * @param {StateContainer} store
+ */
+const bindPortSettings = (el, store) => {
+  el.settingsBtn.addEventListener("click", () =>
+    store.setState({
+      isSettingsModalOpened: true,
+      isStyleModalOpened: false,
+    }),
+  );
+  el.settingsClose.addEventListener("click", () => {
+    store.setState({ isSettingsModalOpened: false });
+  });
+  el.connectBtn.addEventListener("click", () =>
+    store.setState({ isSettingsModalOpened: false }),
+  );
+  el.baudRate.addEventListener("change", (e) =>
+    store.setState({ baudRate: +e.target.value }),
+  );
+  el.dataBits.addEventListener("change", (e) =>
+    store.setState({ dataBits: +e.target.value }),
+  );
+  el.parity.addEventListener("change", (e) =>
+    store.setState({ parity: e.target.value }),
+  );
+  el.stopBits.addEventListener("change", (e) =>
+    store.setState({ stopBits: +e.target.value }),
+  );
+};
+
+/**
+ * Render style settings
+ * @param {AppHTMLElements} el
+ * @param {State} state
+ * @param {State} oldState
+ */
+const renderStyleSettings = (el, state, oldState) => {
+  if (state.bgColor !== oldState.bgColor) {
+    el.bgColor.value = state.bgColor;
+  }
+  el.doc.body.style.background = state.bgColor;
+
+  if (state.textColor !== oldState.textColor) {
+    el.textColor.value = state.textColor;
+  }
+  el.msg.style.color = state.textColor;
+
+  if (state.fontFamily !== oldState.fontFamily) {
+    el.fontFamily.value = state.fontFamily;
+  }
+  el.msg.style.fontFamily = state.fontFamily;
+
+  if (state.fontSize !== oldState.fontSize) {
+    el.fontSize.value = state.fontSize;
+  }
+  el.msg.style.fontSize = `${state.fontSize}vh`;
+};
+
+/**
+ * Bind style settings elements
+ * @param {AppHTMLElements} el
+ * @param {StateContainer} store
+ */
+const bindStyleSettings = (el, store) => {
+  el.styleBtn.addEventListener("click", () =>
+    store.setState({
+      isSettingsModalOpened: false,
+      isStyleModalOpened: true,
+    }),
+  );
+  el.styleClose.addEventListener("click", () =>
+    store.setState({ isStyleModalOpened: false }),
+  );
+  el.bgColor.addEventListener("input", (e) =>
+    store.setState({ bgColor: e.target.value }),
+  );
+  el.textColor.addEventListener("input", (e) =>
+    store.setState({ textColor: e.target.value }),
+  );
+  el.fontFamily.addEventListener("change", (e) =>
+    store.setState({ fontFamily: e.target.value }),
+  );
+  el.fontSize.addEventListener("change", (e) =>
+    store.setState({ fontSize: +e.target.value }),
+  );
+};
+
+/**
+ * Render modal state
+ * @param {AppHTMLElements} el
+ * @param {State} state
+ * @param {State} oldState
+ */
+const renderModalState = (el, state, oldState) => {
+  if (state.isSettingsModalOpened !== oldState.isSettingsModalOpened) {
+    if (state.isSettingsModalOpened) openModal(el.settingsModal);
+    if (!state.isSettingsModalOpened) closeModal(el.settingsModal);
   }
 
-  /** @param {string} color - Text color */
-  set textColor(color) {
-    this._el.textColor.value = color;
-    this._msgEl.style.color = color;
-    this.toSettings().textColor = color;
+  if (state.isStyleModalOpened !== oldState.isStyleModalOpened) {
+    if (state.isStyleModalOpened) openModal(el.styleModal);
+    if (!state.isStyleModalOpened) closeModal(el.styleModal);
+  }
+};
+
+/**
+ * Sanitize HTML before render
+ * @param {string} html
+ */
+const sanitizeHtml = (html) =>
+  html
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+    .replace(/ on\w+="[^"]*"/g, "");
+
+/**
+ * Render messages
+ * @param {AppHTMLElements} el
+ * @param {State} state
+ * @param {State} oldState
+ */
+const renderMessages = (el, state, oldState) => {
+  if (state.message !== oldState.message) {
+    el.msg.innerHTML = sanitizeHtml(state.message);
   }
 
-  get fontFamily() {
-    return this._el.fontFamily.value;
+  if (state.status !== oldState.status) {
+    el.status.innerText = state.status;
   }
+};
 
-  /** @param {string} fontFamily - Font family */
-  set fontFamily(fontFamily) {
-    this._el.fontFamily.value = fontFamily;
-    this._msgEl.style.fontFamily = fontFamily;
-    this.toSettings().fontFamily = fontFamily;
-  }
+/**
+ * Render fullscreen mode
+ * @param {AppHTMLElements} el
+ * @param {State} state
+ */
+const renderFullscreenMode = async (el, state) => {
+  const isFullscreen = Boolean(el.doc.fullscreenElement);
+  if (state.isFullscreen === isFullscreen) return;
+  if (state.isFullscreen && !isFullscreen)
+    return el.doc.documentElement.requestFullscreen();
+  if (!state.isFullscreen && isFullscreen) return el.doc.exitFullscreen();
+};
 
-  get fontSize() {
-    return this._el.fontSize.value;
-  }
+/**
+ * Bind fullscreen DOM
+ * @param {AppHTMLElements} el
+ * @param {StateContainer} store
+ */
+const bindFullscreenMode = (el, store) => {
+  el.fullscreenBtn.addEventListener("click", () => {
+    const isFullscreen = Boolean(el.doc.fullscreenElement);
+    store.setState({ isFullscreen: !isFullscreen });
+  });
 
-  /** @param {string} fontSize - Font size */
-  set fontSize(fontSize) {
-    this._el.fontSize.value = fontSize;
-    this._msgEl.style.fontSize = fontSize + "vh";
-    this.toSettings().fontSize = fontSize;
-  }
-
-  get baudRate() {
-    return +this._el.baudRate.value;
-  }
-
-  /** @param {number} baudRate - Baud rate */
-  set baudRate(baudRate) {
-    this._el.baudRate.value = baudRate;
-    this._msgEl.style.baudRate = baudRate;
-    this.toSettings().baudRate = baudRate;
-  }
-
-  get dataBits() {
-    return +this._el.dataBits.value;
-  }
-
-  /** @param {number} dataBits - Baud rate */
-  set dataBits(dataBits) {
-    this._el.dataBits.value = dataBits;
-    this.toSettings().dataBits = dataBits;
-  }
-
-  get parity() {
-    return this._el.parity.value;
-  }
-
-  /** @param {string} parity - Parity bits */
-  set parity(parity) {
-    this._el.parity.value = parity;
-    this.toSettings().parity = parity;
-  }
-
-  get stopBits() {
-    return +this._el.stopBits.value;
-  }
-
-  /** @param {number} stopBits - Stop bits */
-  set stopBits(stopBits) {
-    this._el.stopBits.value = stopBits;
-    this.toSettings().stopBits = stopBits;
-  }
-
-  toSettings() {
-    return new Settings(
-      this.bgColor,
-      this.textColor,
-      this.fontFamily,
-      this.fontSize,
-      this.baudRate,
-      this.dataBits,
-      this.parity,
-      this.stopBits,
-    );
-  }
-
-  /** @param {Settings} settings - Settings */
-  fromSettings(settings) {
-    this.bgColor = settings.bgColor;
-    this.textColor = settings.textColor;
-    this.fontFamily = settings.fontFamily;
-    this.fontSize = settings.fontSize;
-    this.baudRate = settings.baudRate;
-    this.dataBits = settings.dataBits;
-    this.parity = settings.parity;
-    this.stopBits = settings.stopBits;
-  }
-}
-
-class AppUI {
-  /**
-   * @param {AppUIRootElements} rootEl - HTML elements
-   * @param {AppUISettingsElements} settingsEl - HTML elements
-   */
-  constructor(rootEl, settingsEl) {
-    this._rootEl = rootEl;
-    this._rootEl.settingsBtn.onclick = this.openSettingsModal.bind(this);
-    this._rootEl.settingsClose.onclick = this.closeSettingsModal.bind(this);
-    this._rootEl.styleBtn.onclick = this.openStyleModal.bind(this);
-    this._rootEl.styleClose.onclick = this.closeStyleModal.bind(this);
-    this._rootEl.fullscreenBtn.onclick = this.toggleFullscreen.bind(this);
-
-    this.settings = new AppUISettings(rootEl.msg, settingsEl);
-  }
-
-  /** @param {HTMLElement} el - Target modal element. */
-  _openModal(el) {
-    el.style.display = "flex";
-  }
-
-  /** @param {HTMLElement} el - Target modal element. */
-  _closeModal(el) {
-    el.style.display = "none";
-  }
-
-  openSettingsModal() {
-    this._openModal(this._rootEl.settingsModal);
-  }
-
-  closeSettingsModal() {
-    this._closeModal(this._rootEl.settingsModal);
-  }
-
-  openStyleModal() {
-    this._openModal(this._rootEl.styleModal);
-  }
-
-  closeStyleModal() {
-    this._closeModal(this._rootEl.styleModal);
-  }
-
-  toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-    } else {
-      document.exitFullscreen();
+  el.doc.addEventListener("fullscreenchange", () => {
+    const isFullscreen = Boolean(el.doc.fullscreenElement);
+    const isFullscreenState = store.getState().isFullscreen;
+    if (isFullscreen !== isFullscreenState) {
+      store.setState({ isFullscreen });
     }
-  }
+  });
+};
 
-  setConnectBtnOnClick(fn) {
-    this._rootEl.connectBtn.onclick = fn;
-  }
+/**
+ * Save data from state to DOM elements
+ * @param {AppHTMLElements} el
+ * @param {State} state
+ */
+const renderState = async (el, state) => {
+  const oldState = loadStateFromDOM(el);
 
-  /** @param {string} text - Status text */
-  showStatus(text) {
-    this._rootEl.status.innerText = text;
-  }
+  renderPortSettings(el, state, oldState);
+  renderStyleSettings(el, state, oldState);
+  renderModalState(el, state, oldState);
+  renderMessages(el, state, oldState);
+  await renderFullscreenMode(el, state);
+};
 
-  /** @param {string} html - Meassage */
-  showMessage(html) {
-    // minimal sanitization: strip <script> and inline on*
-    const safe = html
-      .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
-      .replace(/ on\w+="[^"]*"/g, "");
-    this._rootEl.msg.innerHTML = safe;
-  }
-}
+/**
+ * Bind state to DOM elements
+ * @param {AppHTMLElements} el
+ * @param {StateContainer} store
+ */
+const bindStateToDOM = (el, store) => {
+  /** @param {State} state */
+  const render = (state) => renderState(el, state);
+  store.subscribe(render);
 
-export { AppUISettings, AppUI };
+  bindFullscreenMode(el, store);
+  bindPortSettings(el, store);
+  bindStyleSettings(el, store);
+};
+
+export { loadStateFromDOM, bindStateToDOM };
