@@ -45,6 +45,7 @@ const loadState = () => {
   for (const k of PERSIST_STATE_KEYS) {
     const lsKey = `${PERSIST_STATE_KEY_PREFIX}${k}`;
     const value = localStorage.getItem(lsKey);
+    if (value === null) continue;
     if (PERSIST_STATE_STR_KEYS.includes(k)) {
       state[k] = value;
     }
