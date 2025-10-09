@@ -1,4 +1,12 @@
 /**
+ * @typedef {Object} PortEventHandlers
+ * @property {(port: SerialPort) => void} onConnect
+ * @property {() => void} onDisconnect
+ * @property {(error: Error) => void} onError
+ * @property {(msg: string) => void} onMessage
+ */
+
+/**
  * Serial port wrapper
  */
 class Port {
@@ -14,12 +22,9 @@ class Port {
   /**
    *
    * @param {SerialOptions} portOptions
-   * @param {(port: SerialPort) => void} [onConnect]
-   * @param {() => void} [onDisconnect]
-   * @param {(error: Error) => void} [onError]
-   * @param {(msg: string) => void} [onMessage]
+   * @param {Partial<PortEventHandlers>} handlers
    */
-  constructor(portOptions, onConnect, onDisconnect, onError, onMessage) {
+  constructor(portOptions, { onConnect, onDisconnect, onError, onMessage }) {
     const doNothing = () => {};
     this.portOptions = portOptions;
     this.onConnect = onConnect || doNothing;
@@ -47,6 +52,7 @@ class Port {
         .every(Boolean);
     });
     if (ports.length) return ports[0];
+    return false;
   }
 
   /**
@@ -111,7 +117,13 @@ class Port {
     if (port) {
       await this.connectTo(port);
     }
+    return false;
   }
+
+  /**
+   * Write text to port
+   *
+   */
 }
 
 export { Port };

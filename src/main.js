@@ -44,46 +44,30 @@ function debounce(func, timeout = 1000) {
 }
 
 /**
- * Create handler of connect event
+ * Make port event handlers
  * @param {Store} store
- * @returns {(port: SerialPort) => any}
+ * @returns {import("./port.js").PortEventHandlers}
  */
-const makeOnConnectHandler = (store) => (port) => {
-  console.info("Port connected");
-  store
-    .setState({ lastPostInfo: null })
-    .setState({ lastPortInfo: port.getInfo(), status: "Connected" });
-};
-
-/**
- * Create handler of disconnect event
- * @param {Store} store
- * @returns {() => any}
- */
-const makeOnDisconnectHandler = (store) => () => {
-  console.info("Port disconnected");
-  store.setState({ status: "Disconnected" });
-};
-
-/**
- * Create handler of error event
- * @param {Store} store
- * @returns {(error: Error) => any}
- */
-const makeOnErrorHandler = (store) => (error) => {
-  console.error("Port error: ", error);
-  store.setState({ status: `Error: ${error.message}` });
-};
-
-/**
- * Create handler of message event
- * @param {Store} store
- * @returns {(message: string) => any}
- */
-const makeOnMessageHandler = (store) => (message) => {
-  console.info(`Received message: ${message}`);
-  store.setState({ message, status: "Receiving..." });
-};
+const makePortHandlers = (store) => ({
+  onConnect: (port) => {
+    console.info("Port connected");
+    store
+      .setState({ lastPostInfo: null })
+      .setState({ lastPortInfo: port.getInfo(), status: "Connected" });
+  },
+  onDisconnect: () => {
+    console.info("Port disconnected");
+    store.setState({ status: "Disconnected" });
+  },
+  onError: (error) => {
+    console.error("Port error: ", error);
+    store.setState({ status: `Error: ${error.message}` });
+  },
+  onMessage: (message) => {
+    console.info(`Received message: ${message}`);
+    store.setState({ message, status: "Receiving..." });
+  },
+});
 
 /**
  * State to port options
@@ -118,21 +102,18 @@ export async function init() {
     throw Error("Not supported browser");
   }
 
-  const onError = makeOnErrorHandler(store);
+  const portHandlers = makePortHandlers(store);
   const runManualConnect = async () => {
     try {
       await port.connectTo(await port.requestPort());
     } catch (e) {
-      onError(e);
+      portHandlers.onError(e);
     }
   };
 
   const port = new Port(
     getPortOptsFromState(store.getState()),
-    makeOnConnectHandler(store),
-    makeOnDisconnectHandler(store),
-    onError,
-    makeOnMessageHandler(store),
+    makePortHandlers(store),
   );
 
   // connect on manual port select
