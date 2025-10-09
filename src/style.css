@@ -1,4 +1,11 @@
+html {
+  color-scheme: light;
+}
+
 body {
+  font-family: system-ui;
+  font-size: 1.25rem;
+  line-height: 1.5;
   margin: 0;
   display: flex;
   justify-content: center;
@@ -6,7 +13,18 @@ body {
   height: 100vh;
   background: #f6871f;
   color: #fff;
-  font-family: sans-serif;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+main {
+  max-width: min(70ch, 100% - 4rem);
+  margin-inline: auto;
 }
 
 #message {
