@@ -48,18 +48,22 @@ function debounce(func, timeout = 1000) {
  * @param {Store} store
  * @returns {(port: SerialPort) => any}
  */
-const makeOnConnectHandler = (store) => (port) =>
+const makeOnConnectHandler = (store) => (port) => {
+  console.info("Port connected");
   store
     .setState({ lastPostInfo: null })
     .setState({ lastPortInfo: port.getInfo(), status: "Connected" });
+};
 
 /**
  * Create handler of disconnect event
  * @param {Store} store
  * @returns {() => any}
  */
-const makeOnDisconnectHandler = (store) => () =>
+const makeOnDisconnectHandler = (store) => () => {
+  console.info("Port disconnected");
   store.setState({ status: "Disconnected" });
+};
 
 /**
  * Create handler of error event
@@ -67,8 +71,8 @@ const makeOnDisconnectHandler = (store) => () =>
  * @returns {(error: Error) => any}
  */
 const makeOnErrorHandler = (store) => (error) => {
+  console.error("Port error: ", error);
   store.setState({ status: `Error: ${error.message}` });
-  console.error(error);
 };
 
 /**
@@ -76,8 +80,10 @@ const makeOnErrorHandler = (store) => (error) => {
  * @param {Store} store
  * @returns {(message: string) => any}
  */
-const makeOnMessageHandler = (store) => (message) =>
+const makeOnMessageHandler = (store) => (message) => {
+  console.info(`Received message: ${message}`);
   store.setState({ message, status: "Receiving..." });
+};
 
 /**
  * State to port options
