@@ -22,11 +22,6 @@ video {
   display: block;
 }
 
-main {
-  max-width: min(70ch, 100% - 4rem);
-  margin-inline: auto;
-}
-
 #message {
   font-size: 10vh;
   text-align: center;
