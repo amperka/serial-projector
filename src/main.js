@@ -97,7 +97,7 @@ const getPortOptsFromState = (state) => ({
   stopBits: state.stopBits,
 });
 
-async function init() {
+export async function init() {
   // init store with defauls from DOM
   const initialState = loadStateFromDOM(appHtmlElements);
   const store = new StateContainer(initialState);
@@ -148,5 +148,3 @@ async function init() {
   // connect to the last connected port
   await connectToPrevPort();
 }
-
-init();
