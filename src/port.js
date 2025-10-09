@@ -12,7 +12,7 @@
 class Port {
   /** @type {SerialPort | null} */
   #port = null;
-  /** @type {ReadableStreamDefaultReader<Uint8Array<string> | null} */
+  /** @type {ReadableStreamDefaultReader<Uint8Array<ArrayBuffer> | null} */
   #reader = null;
   /** @type {Boolean} */
   #keepReading = true;
@@ -121,9 +121,21 @@ class Port {
   }
 
   /**
-   * Write text to port
-   *
+   * Write message to port
+   * @param {string | Uint8Array} msg - Message to send
    */
+  async write(msg) {
+    if (!this.#port || !this.#port.writable) return false;
+    const chunk = typeof msg === "string" ? new TextEncoder().encode(msg) : msg;
+    const writer = this.#port.writable.getWriter();
+    try {
+      await writer.write(chunk);
+    } catch (e) {
+      this.onError(e);
+    } finally {
+      writer.releaseLock();
+    }
+  }
 }
 
 export { Port };
