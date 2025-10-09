@@ -115,6 +115,7 @@ export async function init() {
     getPortOptsFromState(store.getState()),
     makePortHandlers(store),
   );
+  console.debug(port); // can use port directly for debugging
 
   // connect on manual port select
   appHtmlElements.connectBtn.addEventListener("click", runManualConnect);
