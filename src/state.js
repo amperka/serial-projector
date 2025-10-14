@@ -11,6 +11,7 @@
  * @property {boolean} isFullscreen - Fullscreen mode state
  * @property {boolean} isSettingsModalOpened - Settings modal state
  * @property {boolean} isStyleModalOpened - Style modal state
+ * @property {boolean} isAboutModalOpened - About modal state
  * @property {string} message - Message text
  * @property {string} status - Status text
  * @property {SerialPortInfo} lastPortInfo - Last connected port's info

@@ -68,6 +68,8 @@ video {
   color: #000;
   padding: 20px;
   border-radius: 10px;
+  max-width: min(70ch, 100% - 4rem);
+  margin-inline: auto;
 }
 
 .modal-content label {

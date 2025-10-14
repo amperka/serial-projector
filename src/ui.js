@@ -10,6 +10,9 @@
  * @property {HTMLElement} styleClose - Close style HTML element
  * @property {HTMLElement} styleModal - Style modal HTML element
  * @property {HTMLElement} fullscreenBtn - Full screen button HTML element
+ * @property {HTMLElement} aboutBtn - About button HTML element
+ * @property {HTMLElement} aboutModal - About modal HTML element
+ * @property {HTMLElement} aboutClose - Close about modal HTML element
  * @property {HTMLElement} connectBtn - Connect button HTML element
  * @property {HTMLElement} disconnectBtn - Disconnect button HTML element
  * @property {HTMLElement} bgColor - Background color HTML element
@@ -66,6 +69,7 @@ const loadStateFromDOM = (el) => ({
   isFullscreen: Boolean(el.doc.fullscreenElement),
   isSettingsModalOpened: !isModalClosed(el.settingsModal),
   isStyleModalOpened: !isModalClosed(el.styleModal),
+  isAboutModalOpened: !isModalClosed(el.aboutModal),
   message: el.msg.innerHTML,
   status: el.status.innerText,
 });
@@ -104,6 +108,7 @@ const bindPortSettings = (el, store) => {
     store.setState({
       isSettingsModalOpened: true,
       isStyleModalOpened: false,
+      isAboutModalOpened: false,
     }),
   );
   el.settingsClose.addEventListener("click", () => {
@@ -167,6 +172,7 @@ const bindStyleSettings = (el, store) => {
     store.setState({
       isSettingsModalOpened: false,
       isStyleModalOpened: true,
+      isAboutModalOpened: false,
     }),
   );
   el.styleClose.addEventListener("click", () =>
@@ -187,6 +193,24 @@ const bindStyleSettings = (el, store) => {
 };
 
 /**
+ * Bind about elements
+ * @param {AppHTMLElements} el
+ * @param {StateContainer} store
+ */
+const bindAbout = (el, store) => {
+  el.aboutBtn.addEventListener("click", () =>
+    store.setState({
+      isSettingsModalOpened: false,
+      isStyleModalOpened: false,
+      isAboutModalOpened: true,
+    }),
+  );
+  el.aboutClose.addEventListener("click", () =>
+    store.setState({ isAboutModalOpened: false }),
+  );
+};
+
+/**
  * Render modal state
  * @param {AppHTMLElements} el
  * @param {State} state
@@ -201,6 +225,11 @@ const renderModalState = (el, state, oldState) => {
   if (state.isStyleModalOpened !== oldState.isStyleModalOpened) {
     if (state.isStyleModalOpened) openModal(el.styleModal);
     if (!state.isStyleModalOpened) closeModal(el.styleModal);
+  }
+
+  if (state.isAboutModalOpened !== oldState.isAboutModalOpened) {
+    if (state.isAboutModalOpened) openModal(el.aboutModal);
+    if (!state.isAboutModalOpened) closeModal(el.aboutModal);
   }
 };
 
@@ -290,6 +319,7 @@ const bindStateToDOM = (el, store) => {
   bindFullscreenMode(el, store);
   bindPortSettings(el, store);
   bindStyleSettings(el, store);
+  bindAbout(el, store);
 };
 
 export { loadStateFromDOM, bindStateToDOM };
