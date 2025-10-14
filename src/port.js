@@ -92,14 +92,32 @@ class Port {
   }
 
   /**
-   * Connect to port
-   * @param {SerialPort} port
+   * Stop reading
    */
-  async connectTo(port) {
+  async stopReading() {
     this.#keepReading = false;
     // call reader.releaseLock() in the loop
     if (this.#port && this.#reader) this.#reader.cancel();
     if (this.#portClosePromise) await this.#portClosePromise;
+  }
+
+  /**
+   * Forget all port
+   */
+  async forgetAll() {
+    if (this.#port) await this.#port.forget();
+    this.#port = null;
+    for (const port of await navigator.serial.getPorts()) {
+      await port.forget();
+    }
+  }
+
+  /**
+   * Connect to port
+   * @param {SerialPort} port
+   */
+  async connectTo(port) {
+    await this.stopReading();
 
     await port.open(this.portOptions);
     this.onConnect(port);

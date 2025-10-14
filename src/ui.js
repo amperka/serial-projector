@@ -11,6 +11,7 @@
  * @property {HTMLElement} styleModal - Style modal HTML element
  * @property {HTMLElement} fullscreenBtn - Full screen button HTML element
  * @property {HTMLElement} connectBtn - Connect button HTML element
+ * @property {HTMLElement} disconnectBtn - Disconnect button HTML element
  * @property {HTMLElement} bgColor - Background color HTML element
  * @property {HTMLElement} textColor - Text color HTML element
  * @property {HTMLElement} fontFamily - Font family HTML element
@@ -109,6 +110,9 @@ const bindPortSettings = (el, store) => {
     store.setState({ isSettingsModalOpened: false });
   });
   el.connectBtn.addEventListener("click", () =>
+    store.setState({ isSettingsModalOpened: false }),
+  );
+  el.disconnectBtn.addEventListener("click", () =>
     store.setState({ isSettingsModalOpened: false }),
   );
   el.baudRate.addEventListener("change", (e) =>

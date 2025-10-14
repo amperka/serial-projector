@@ -20,6 +20,7 @@ const appHtmlElements = {
   styleModal: document.getElementById("styleModal"),
   fullscreenBtn: document.getElementById("fullscreenBtn"),
   connectBtn: document.getElementById("connectBtn"),
+  disconnectBtn: document.getElementById("disconnectBtn"),
   bgColor: document.getElementById("bgColor"),
   textColor: document.getElementById("textColor"),
   fontFamily: document.getElementById("fontFamily"),
@@ -119,6 +120,13 @@ export async function init() {
 
   // connect on manual port select
   appHtmlElements.connectBtn.addEventListener("click", runManualConnect);
+
+  // force disconnection
+  appHtmlElements.disconnectBtn.addEventListener("click", async () => {
+    await port.stopReading();
+    await port.forgetAll();
+    store.setState({ lastPortInfo: {} });
+  });
 
   const connectToPrevPort = async () =>
     port.connectToPrev(store.getState().lastPortInfo);
