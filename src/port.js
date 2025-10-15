@@ -1,3 +1,5 @@
+/* eslint no-control-regex: "off" */
+
 /**
  * @typedef {Object} PortEventHandlers
  * @property {(port: SerialPort) => void} onConnect
@@ -56,6 +58,38 @@ class Port {
   }
 
   /**
+   * Handle some VT100 escape code sequences
+   * @param {string} s - Input message
+   * @returns string
+   */
+  handleVT100Codes(s) {
+    let result = s;
+
+    for (const csi of ["\x1b[", "\x33["]) {
+      // erase display
+      for (const ed of ["J", "0J", "1J", "2J", "3J"]) {
+        const code = csi + ed;
+        result = result.split(code).at(-1);
+      }
+
+      // erase line
+      result = result.split(csi + "K").at(0);
+      result = result.split(csi + "0K").at(0);
+      result = result.split(csi + "1K").at(-1);
+      if (result.includes(csi + "2K")) {
+        result = "";
+      }
+    }
+
+    // escape code
+    while (result.includes("\x08")) {
+      result = result.replace(/^\x08/, "").replace(/[^\x08]\x08/, "");
+    }
+
+    return result;
+  }
+
+  /**
    * Read port until closed
    */
   async readUntilClosed() {
@@ -70,12 +104,13 @@ class Port {
           const { value, done } = await this.#reader.read();
           if (done) break; // reader.cancel() has been called.
           if (value) {
+            console.debug("Raw chunk: ", value);
             buffer += new TextDecoder().decode(value);
           }
           const parts = buffer.split("\n");
           buffer = parts.pop();
           for (const msg of parts) {
-            this.onMessage(msg);
+            this.onMessage(this.handleVT100Codes(msg));
           }
         }
       } catch (error) {
