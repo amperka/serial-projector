@@ -29,9 +29,10 @@ class Port {
   /**
    *
    * @param {SerialOptions} portOptions
-   * @param {Partial<PortEventHandlers>} handlers
+   * @param {Partial<PortEventHandlers>} [handlers]
    */
-  constructor(portOptions, { onConnect, onDisconnect, onError, onMessage }) {
+  constructor(portOptions, handlers = {}) {
+    const { onConnect, onDisconnect, onError, onMessage } = handlers;
     const doNothing = () => {};
     this.portOptions = portOptions;
     this.onConnect = onConnect || doNothing;
@@ -175,6 +176,7 @@ class Port {
     const port = await this.getPrevPort(prevInfo);
     if (port) {
       await this.connectTo(port);
+      return true;
     }
     return false;
   }
@@ -184,6 +186,7 @@ class Port {
    * @param {string | Uint8Array} msg - Message to send
    */
   async write(msg) {
+    console.log(this.#port);
     if (!this.#port || !this.#port.writable) return false;
     const chunk = typeof msg === "string" ? new TextEncoder().encode(msg) : msg;
     const writer = this.#port.writable.getWriter();
