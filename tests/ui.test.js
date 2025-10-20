@@ -420,11 +420,13 @@ describe("ui.js", () => {
       };
       bindAbout(el, store);
       el.aboutBtn.click();
-      verifyStateUpdates(store.setState, [{
-        isSettingsModalOpened: false,
-        isStyleModalOpened: false,
-        isAboutModalOpened: true,
-      }]);
+      verifyStateUpdates(store.setState, [
+        {
+          isSettingsModalOpened: false,
+          isStyleModalOpened: false,
+          isAboutModalOpened: true,
+        },
+      ]);
     });
 
     it("binds aboutClose click to close about modal", () => {
@@ -435,9 +437,11 @@ describe("ui.js", () => {
       };
       bindAbout(el, store);
       el.aboutClose.click();
-      verifyStateUpdates(store.setState, [{
-        isAboutModalOpened: false,
-      }]);
+      verifyStateUpdates(store.setState, [
+        {
+          isAboutModalOpened: false,
+        },
+      ]);
     });
   });
 

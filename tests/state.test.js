@@ -256,9 +256,20 @@ describe("StateContainer", () => {
         container.setState({ message: "second" });
 
         expect(listener).toHaveBeenCalledTimes(3);
-        expect(listener).toHaveBeenNthCalledWith(1, { ...initialState, message: "first" });
-        expect(listener).toHaveBeenNthCalledWith(2, { ...initialState, message: "first", status: "updated" });
-        expect(listener).toHaveBeenNthCalledWith(3, { ...initialState, status: "updated", message: "second" });
+        expect(listener).toHaveBeenNthCalledWith(1, {
+          ...initialState,
+          message: "first",
+        });
+        expect(listener).toHaveBeenNthCalledWith(2, {
+          ...initialState,
+          message: "first",
+          status: "updated",
+        });
+        expect(listener).toHaveBeenNthCalledWith(3, {
+          ...initialState,
+          status: "updated",
+          message: "second",
+        });
       });
 
       it("should handle unsubscribe during state update", () => {

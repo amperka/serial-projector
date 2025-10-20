@@ -24,7 +24,6 @@ export const defaultState = {
   lastPortInfo: null,
 };
 
-
 /**
  * State with custom serial port settings.
  */

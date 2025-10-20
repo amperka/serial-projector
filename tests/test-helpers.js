@@ -177,9 +177,9 @@ export function mockLocalStorage() {
  * - debug: For debug messages
  */
 export function mockConsole() {
-  vi.spyOn(console, "info").mockImplementation(() => { });
-  vi.spyOn(console, "error").mockImplementation(() => { });
-  vi.spyOn(console, "debug").mockImplementation(() => { });
+  vi.spyOn(console, "info").mockImplementation(() => {});
+  vi.spyOn(console, "error").mockImplementation(() => {});
+  vi.spyOn(console, "debug").mockImplementation(() => {});
 }
 
 /**

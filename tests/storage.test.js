@@ -149,8 +149,6 @@ describe("storage.js", () => {
       });
     });
 
-
-
     it("should handle null values in state", () => {
       const state = { bgColor: null, textColor: "#000000" };
       saveState(state);
@@ -164,7 +162,10 @@ describe("storage.js", () => {
     it("should handle undefined values in state", () => {
       const state = { bgColor: undefined, textColor: "#000000" };
       saveState(state);
-      expect(localStorage.setItem).toHaveBeenCalledWith("state_bgColor", undefined);
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "state_bgColor",
+        undefined,
+      );
       expect(localStorage.setItem).toHaveBeenCalledWith(
         "state_textColor",
         "#000000",
