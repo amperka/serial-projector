@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   isModalClosed,
   openModal,
@@ -18,6 +18,17 @@ import {
   bindStateToDOM,
 } from "../src/ui.js";
 import { StateContainer } from "../src/state.js";
+import {
+  createMockButton,
+  createMockInput,
+  createMockDiv,
+  createMockModal,
+  createMockDocument,
+  createMockStore,
+  setupTestEnvironment,
+  verifyStateUpdates,
+} from "./test-helpers.js";
+import { defaultState } from "./fixtures/state-fixtures.js";
 
 describe("ui.js", () => {
   describe("isModalClosed", () => {
@@ -134,18 +145,20 @@ describe("ui.js", () => {
   });
 
   describe("bindPortSettings", () => {
+    const createPortSettingsElements = () => ({
+      settingsBtn: createMockButton(),
+      settingsClose: createMockButton(),
+      connectBtn: createMockButton(),
+      disconnectBtn: createMockButton(),
+      baudRate: createMockInput(),
+      dataBits: createMockInput(),
+      parity: createMockInput(),
+      stopBits: createMockInput(),
+    });
+
     it("binds settingsBtn click to open settings modal", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        settingsBtn: document.createElement("button"),
-        settingsClose: document.createElement("button"),
-        connectBtn: document.createElement("button"),
-        disconnectBtn: document.createElement("button"),
-        baudRate: document.createElement("input"),
-        dataBits: document.createElement("input"),
-        parity: document.createElement("input"),
-        stopBits: document.createElement("input"),
-      };
+      const el = createPortSettingsElements();
       bindPortSettings(el, store);
       el.settingsBtn.click();
       expect(store.setState).toHaveBeenCalledWith({
@@ -157,16 +170,7 @@ describe("ui.js", () => {
 
     it("binds settingsClose click to close settings modal", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        settingsBtn: document.createElement("button"),
-        settingsClose: document.createElement("button"),
-        connectBtn: document.createElement("button"),
-        disconnectBtn: document.createElement("button"),
-        baudRate: document.createElement("input"),
-        dataBits: document.createElement("input"),
-        parity: document.createElement("input"),
-        stopBits: document.createElement("input"),
-      };
+      const el = createPortSettingsElements();
       bindPortSettings(el, store);
       el.settingsClose.click();
       expect(store.setState).toHaveBeenCalledWith({
@@ -176,16 +180,7 @@ describe("ui.js", () => {
 
     it("binds connectBtn click to close settings modal", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        settingsBtn: document.createElement("button"),
-        settingsClose: document.createElement("button"),
-        connectBtn: document.createElement("button"),
-        disconnectBtn: document.createElement("button"),
-        baudRate: document.createElement("input"),
-        dataBits: document.createElement("input"),
-        parity: document.createElement("input"),
-        stopBits: document.createElement("input"),
-      };
+      const el = createPortSettingsElements();
       bindPortSettings(el, store);
       el.connectBtn.click();
       expect(store.setState).toHaveBeenCalledWith({
@@ -195,16 +190,7 @@ describe("ui.js", () => {
 
     it("binds disconnectBtn click to close settings modal", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        settingsBtn: document.createElement("button"),
-        settingsClose: document.createElement("button"),
-        connectBtn: document.createElement("button"),
-        disconnectBtn: document.createElement("button"),
-        baudRate: document.createElement("input"),
-        dataBits: document.createElement("input"),
-        parity: document.createElement("input"),
-        stopBits: document.createElement("input"),
-      };
+      const el = createPortSettingsElements();
       bindPortSettings(el, store);
       el.disconnectBtn.click();
       expect(store.setState).toHaveBeenCalledWith({
@@ -214,16 +200,7 @@ describe("ui.js", () => {
 
     it("binds baudRate change to update state", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        settingsBtn: document.createElement("button"),
-        settingsClose: document.createElement("button"),
-        connectBtn: document.createElement("button"),
-        disconnectBtn: document.createElement("button"),
-        baudRate: document.createElement("input"),
-        dataBits: document.createElement("input"),
-        parity: document.createElement("input"),
-        stopBits: document.createElement("input"),
-      };
+      const el = createPortSettingsElements();
       bindPortSettings(el, store);
       el.baudRate.value = "115200";
       el.baudRate.dispatchEvent(new Event("change"));
@@ -232,16 +209,7 @@ describe("ui.js", () => {
 
     it("binds dataBits change to update state", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        settingsBtn: document.createElement("button"),
-        settingsClose: document.createElement("button"),
-        connectBtn: document.createElement("button"),
-        disconnectBtn: document.createElement("button"),
-        baudRate: document.createElement("input"),
-        dataBits: document.createElement("input"),
-        parity: document.createElement("input"),
-        stopBits: document.createElement("input"),
-      };
+      const el = createPortSettingsElements();
       bindPortSettings(el, store);
       el.dataBits.value = "7";
       el.dataBits.dispatchEvent(new Event("change"));
@@ -250,16 +218,7 @@ describe("ui.js", () => {
 
     it("binds parity change to update state", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        settingsBtn: document.createElement("button"),
-        settingsClose: document.createElement("button"),
-        connectBtn: document.createElement("button"),
-        disconnectBtn: document.createElement("button"),
-        baudRate: document.createElement("input"),
-        dataBits: document.createElement("input"),
-        parity: document.createElement("input"),
-        stopBits: document.createElement("input"),
-      };
+      const el = createPortSettingsElements();
       bindPortSettings(el, store);
       el.parity.value = "even";
       el.parity.dispatchEvent(new Event("change"));
@@ -268,16 +227,7 @@ describe("ui.js", () => {
 
     it("binds stopBits change to update state", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        settingsBtn: document.createElement("button"),
-        settingsClose: document.createElement("button"),
-        connectBtn: document.createElement("button"),
-        disconnectBtn: document.createElement("button"),
-        baudRate: document.createElement("input"),
-        dataBits: document.createElement("input"),
-        parity: document.createElement("input"),
-        stopBits: document.createElement("input"),
-      };
+      const el = createPortSettingsElements();
       bindPortSettings(el, store);
       el.stopBits.value = "2";
       el.stopBits.dispatchEvent(new Event("change"));
@@ -286,15 +236,22 @@ describe("ui.js", () => {
   });
 
   describe("renderStyleSettings", () => {
+    const createStyleSettingsElements = () => ({
+      doc: createMockDocument(),
+      bgColor: createMockInput(),
+      textColor: createMockInput(),
+      fontFamily: createMockInput(),
+      fontSize: createMockInput(),
+      msg: createMockDiv(),
+    });
+
     it("updates bgColor and body background if changed", () => {
-      const el = {
-        doc: document,
-        bgColor: { value: "#000" },
-        textColor: { value: "#fff" },
-        fontFamily: { value: "Arial" },
-        fontSize: { value: "10" },
-        msg: document.createElement("div"),
-      };
+      const el = createStyleSettingsElements();
+      el.bgColor.value = "#000";
+      el.textColor.value = "#fff";
+      el.fontFamily.value = "Arial";
+      el.fontSize.value = "10";
+
       const state = {
         bgColor: "#fff",
         textColor: "#000",
@@ -309,18 +266,16 @@ describe("ui.js", () => {
       };
       renderStyleSettings(el, state, oldState);
       expect(el.bgColor.value).toBe("#fff");
-      expect(el.doc.body.style.background).toBe("rgb(255, 255, 255)");
+      expect(el.doc.body.style.background).toBe("#fff");
     });
 
     it("updates textColor and msg color if changed", () => {
-      const el = {
-        doc: document,
-        bgColor: { value: "#000" },
-        textColor: { value: "#fff" },
-        fontFamily: { value: "Arial" },
-        fontSize: { value: "10" },
-        msg: document.createElement("div"),
-      };
+      const el = createStyleSettingsElements();
+      el.bgColor.value = "#000";
+      el.textColor.value = "#fff";
+      el.fontFamily.value = "Arial";
+      el.fontSize.value = "10";
+
       const state = {
         bgColor: "#000",
         textColor: "#000",
@@ -335,18 +290,16 @@ describe("ui.js", () => {
       };
       renderStyleSettings(el, state, oldState);
       expect(el.textColor.value).toBe("#000");
-      expect(el.msg.style.color).toBe("rgb(0, 0, 0)");
+      expect(el.msg.style.color).toBe("#000");
     });
 
     it("updates fontFamily and msg fontFamily if changed", () => {
-      const el = {
-        doc: document,
-        bgColor: { value: "#000" },
-        textColor: { value: "#fff" },
-        fontFamily: { value: "Arial" },
-        fontSize: { value: "10" },
-        msg: document.createElement("div"),
-      };
+      const el = createStyleSettingsElements();
+      el.bgColor.value = "#000";
+      el.textColor.value = "#fff";
+      el.fontFamily.value = "Arial";
+      el.fontSize.value = "10";
+
       const state = {
         bgColor: "#000",
         textColor: "#fff",
@@ -365,14 +318,12 @@ describe("ui.js", () => {
     });
 
     it("updates fontSize and msg fontSize if changed", () => {
-      const el = {
-        doc: document,
-        bgColor: { value: "#000" },
-        textColor: { value: "#fff" },
-        fontFamily: { value: "Arial" },
-        fontSize: { value: "10" },
-        msg: document.createElement("div"),
-      };
+      const el = createStyleSettingsElements();
+      el.bgColor.value = "#000";
+      el.textColor.value = "#fff";
+      el.fontFamily.value = "Arial";
+      el.fontSize.value = "10";
+
       const state = {
         bgColor: "#000",
         textColor: "#fff",
@@ -392,16 +343,18 @@ describe("ui.js", () => {
   });
 
   describe("bindStyleSettings", () => {
+    const createStyleSettingsElements = () => ({
+      styleBtn: createMockButton(),
+      styleClose: createMockButton(),
+      bgColor: createMockInput(),
+      textColor: createMockInput(),
+      fontFamily: createMockInput(),
+      fontSize: createMockInput(),
+    });
+
     it("binds styleBtn click to open style modal", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        styleBtn: document.createElement("button"),
-        styleClose: document.createElement("button"),
-        bgColor: document.createElement("input"),
-        textColor: document.createElement("input"),
-        fontFamily: document.createElement("input"),
-        fontSize: document.createElement("input"),
-      };
+      const el = createStyleSettingsElements();
       bindStyleSettings(el, store);
       el.styleBtn.click();
       expect(store.setState).toHaveBeenCalledWith({
@@ -413,14 +366,7 @@ describe("ui.js", () => {
 
     it("binds styleClose click to close style modal", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        styleBtn: document.createElement("button"),
-        styleClose: document.createElement("button"),
-        bgColor: document.createElement("input"),
-        textColor: document.createElement("input"),
-        fontFamily: document.createElement("input"),
-        fontSize: document.createElement("input"),
-      };
+      const el = createStyleSettingsElements();
       bindStyleSettings(el, store);
       el.styleClose.click();
       expect(store.setState).toHaveBeenCalledWith({
@@ -430,14 +376,7 @@ describe("ui.js", () => {
 
     it("binds bgColor input to update state", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        styleBtn: document.createElement("button"),
-        styleClose: document.createElement("button"),
-        bgColor: document.createElement("input"),
-        textColor: document.createElement("input"),
-        fontFamily: document.createElement("input"),
-        fontSize: document.createElement("input"),
-      };
+      const el = createStyleSettingsElements();
       bindStyleSettings(el, store);
       el.bgColor.value = "#fff";
       el.bgColor.dispatchEvent(new Event("input"));
@@ -446,14 +385,7 @@ describe("ui.js", () => {
 
     it("binds textColor input to update state", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        styleBtn: document.createElement("button"),
-        styleClose: document.createElement("button"),
-        bgColor: document.createElement("input"),
-        textColor: document.createElement("input"),
-        fontFamily: document.createElement("input"),
-        fontSize: document.createElement("input"),
-      };
+      const el = createStyleSettingsElements();
       bindStyleSettings(el, store);
       el.textColor.value = "#000";
       el.textColor.dispatchEvent(new Event("input"));
@@ -462,14 +394,7 @@ describe("ui.js", () => {
 
     it("binds fontFamily change to update state", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        styleBtn: document.createElement("button"),
-        styleClose: document.createElement("button"),
-        bgColor: document.createElement("input"),
-        textColor: document.createElement("input"),
-        fontFamily: document.createElement("input"),
-        fontSize: document.createElement("input"),
-      };
+      const el = createStyleSettingsElements();
       bindStyleSettings(el, store);
       el.fontFamily.value = "Times";
       el.fontFamily.dispatchEvent(new Event("change"));
@@ -478,14 +403,7 @@ describe("ui.js", () => {
 
     it("binds fontSize change to update state", () => {
       const store = { setState: vi.fn() };
-      const el = {
-        styleBtn: document.createElement("button"),
-        styleClose: document.createElement("button"),
-        bgColor: document.createElement("input"),
-        textColor: document.createElement("input"),
-        fontFamily: document.createElement("input"),
-        fontSize: document.createElement("input"),
-      };
+      const el = createStyleSettingsElements();
       bindStyleSettings(el, store);
       el.fontSize.value = "14";
       el.fontSize.dispatchEvent(new Event("change"));
@@ -495,41 +413,43 @@ describe("ui.js", () => {
 
   describe("bindAbout", () => {
     it("binds aboutBtn click to open about modal", () => {
-      const store = { setState: vi.fn() };
+      const store = createMockStore();
       const el = {
-        aboutBtn: document.createElement("button"),
-        aboutClose: document.createElement("button"),
+        aboutBtn: createMockButton(),
+        aboutClose: createMockButton(),
       };
       bindAbout(el, store);
       el.aboutBtn.click();
-      expect(store.setState).toHaveBeenCalledWith({
+      verifyStateUpdates(store.setState, [{
         isSettingsModalOpened: false,
         isStyleModalOpened: false,
         isAboutModalOpened: true,
-      });
+      }]);
     });
 
     it("binds aboutClose click to close about modal", () => {
-      const store = { setState: vi.fn() };
+      const store = createMockStore();
       const el = {
-        aboutBtn: document.createElement("button"),
-        aboutClose: document.createElement("button"),
+        aboutBtn: createMockButton(),
+        aboutClose: createMockButton(),
       };
       bindAbout(el, store);
       el.aboutClose.click();
-      expect(store.setState).toHaveBeenCalledWith({
+      verifyStateUpdates(store.setState, [{
         isAboutModalOpened: false,
-      });
+      }]);
     });
   });
 
   describe("renderModalState", () => {
+    const createModalElements = () => ({
+      settingsModal: createMockModal(),
+      styleModal: createMockModal(),
+      aboutModal: createMockModal(),
+    });
+
     it("opens settings modal if state changed to true", () => {
-      const el = {
-        settingsModal: { style: { display: "none" } },
-        styleModal: { style: { display: "none" } },
-        aboutModal: { style: { display: "none" } },
-      };
+      const el = createModalElements();
       const state = {
         isSettingsModalOpened: true,
         isStyleModalOpened: false,
@@ -545,11 +465,8 @@ describe("ui.js", () => {
     });
 
     it("closes settings modal if state changed to false", () => {
-      const el = {
-        settingsModal: { style: { display: "flex" } },
-        styleModal: { style: { display: "none" } },
-        aboutModal: { style: { display: "none" } },
-      };
+      const el = createModalElements();
+      el.settingsModal.style.display = "flex";
       const state = {
         isSettingsModalOpened: false,
         isStyleModalOpened: false,
@@ -565,11 +482,7 @@ describe("ui.js", () => {
     });
 
     it("opens style modal if state changed to true", () => {
-      const el = {
-        settingsModal: { style: { display: "none" } },
-        styleModal: { style: { display: "none" } },
-        aboutModal: { style: { display: "none" } },
-      };
+      const el = createModalElements();
       const state = {
         isSettingsModalOpened: false,
         isStyleModalOpened: true,
@@ -585,11 +498,8 @@ describe("ui.js", () => {
     });
 
     it("closes style modal if state changed to false", () => {
-      const el = {
-        settingsModal: { style: { display: "none" } },
-        styleModal: { style: { display: "flex" } },
-        aboutModal: { style: { display: "none" } },
-      };
+      const el = createModalElements();
+      el.styleModal.style.display = "flex";
       const state = {
         isSettingsModalOpened: false,
         isStyleModalOpened: false,
@@ -605,11 +515,7 @@ describe("ui.js", () => {
     });
 
     it("opens about modal if state changed to true", () => {
-      const el = {
-        settingsModal: { style: { display: "none" } },
-        styleModal: { style: { display: "none" } },
-        aboutModal: { style: { display: "none" } },
-      };
+      const el = createModalElements();
       const state = {
         isSettingsModalOpened: false,
         isStyleModalOpened: false,
@@ -625,11 +531,8 @@ describe("ui.js", () => {
     });
 
     it("closes about modal if state changed to false", () => {
-      const el = {
-        settingsModal: { style: { display: "none" } },
-        styleModal: { style: { display: "none" } },
-        aboutModal: { style: { display: "flex" } },
-      };
+      const el = createModalElements();
+      el.aboutModal.style.display = "flex";
       const state = {
         isSettingsModalOpened: false,
         isStyleModalOpened: false,
@@ -646,28 +549,87 @@ describe("ui.js", () => {
   });
 
   describe("sanitizeHtml", () => {
-    it("removes script tags", () => {
-      const html = "<p>hello</p><script>alert(1)</script><p>world</p>";
-      expect(sanitizeHtml(html)).toBe("<p>hello</p><p>world</p>");
-    });
+    const sanitizeTestCases = [
+      {
+        description: "removes script tags",
+        input: "<p>hello</p><script>alert(1)</script><p>world</p>",
+        expected: "<p>hello</p><p>world</p>",
+      },
+      {
+        description: "removes multiple script tags",
+        input: "<script>alert(1)</script>content<script>alert(2)</script>",
+        expected: "content",
+      },
+      {
+        description: "removes script tags with attributes",
+        input: '<script src="evil.js" type="text/javascript">alert(1)</script>',
+        expected: "",
+      },
+      {
+        description: "removes inline onclick handlers",
+        input: '<p onclick="alert(1)">hello</p>',
+        expected: "<p>hello</p>",
+      },
+      {
+        description: "removes inline onmouseover handlers",
+        input: '<a href="#" onmouseover="doSomething()">link</a>',
+        expected: '<a href="#">link</a>',
+      },
+      {
+        description: "removes multiple event handlers",
+        input:
+          '<div onclick="x()" onmouseover="y()" onload="z()">content</div>',
+        expected: "<div>content</div>",
+      },
+      {
+        description: "leaves class attributes intact",
+        input: '<p class="test">hello</p>',
+        expected: '<p class="test">hello</p>',
+      },
+      {
+        description: "leaves id attributes intact",
+        input: '<p id="para">hello</p>',
+        expected: '<p id="para">hello</p>',
+      },
+      {
+        description: "leaves multiple safe attributes intact",
+        input: '<p class="test" id="para" data-value="123">hello</p>',
+        expected: '<p class="test" id="para" data-value="123">hello</p>',
+      },
+      {
+        description: "handles empty string",
+        input: "",
+        expected: "",
+      },
+      {
+        description: "handles plain text without HTML",
+        input: "plain text",
+        expected: "plain text",
+      },
+      {
+        description: "handles malformed HTML",
+        input: "<p>unclosed tag",
+        expected: "<p>unclosed tag",
+      },
+      {
+        description: "removes script-like content in attributes",
+        input: '<div data-script="javascript:alert(1)">content</div>',
+        expected: '<div data-script="javascript:alert(1)">content</div>',
+      },
+    ];
 
-    it("removes inline event handlers", () => {
-      const html =
-        '<p onclick="alert(1)">hello</p><a href="#" onmouseover="doSomething()">link</a>';
-      expect(sanitizeHtml(html)).toBe('<p>hello</p><a href="#">link</a>');
-    });
-
-    it("leaves other attributes intact", () => {
-      const html = '<p class="test" id="para">hello</p>';
-      expect(sanitizeHtml(html)).toBe('<p class="test" id="para">hello</p>');
+    sanitizeTestCases.forEach((testCase) => {
+      it(testCase.description, () => {
+        expect(sanitizeHtml(testCase.input)).toBe(testCase.expected);
+      });
     });
   });
 
   describe("renderMessages", () => {
     it("updates msg innerHTML if message changed", () => {
       const el = {
-        msg: document.createElement("div"),
-        status: document.createElement("div"),
+        msg: createMockDiv(),
+        status: createMockDiv(),
       };
       const state = { message: "<p>new message</p>", status: "connected" };
       const oldState = { message: "<p>old message</p>", status: "connected" };
@@ -677,8 +639,8 @@ describe("ui.js", () => {
 
     it("does not update msg if message not changed", () => {
       const el = {
-        msg: document.createElement("div"),
-        status: document.createElement("div"),
+        msg: createMockDiv(),
+        status: createMockDiv(),
       };
       el.msg.innerHTML = "<p>same</p>";
       const state = { message: "<p>same</p>", status: "connected" };
@@ -689,8 +651,8 @@ describe("ui.js", () => {
 
     it("updates status innerText if status changed", () => {
       const el = {
-        msg: document.createElement("div"),
-        status: document.createElement("div"),
+        msg: createMockDiv(),
+        status: createMockDiv(),
       };
       const state = { message: "<p>msg</p>", status: "disconnected" };
       const oldState = { message: "<p>msg</p>", status: "connected" };
@@ -701,11 +663,7 @@ describe("ui.js", () => {
 
   describe("renderFullscreenMode", () => {
     it("requests fullscreen if state is true and not fullscreen", async () => {
-      const mockDoc = {
-        fullscreenElement: null,
-        documentElement: { requestFullscreen: vi.fn() },
-        exitFullscreen: vi.fn(),
-      };
+      const mockDoc = createMockDocument();
       const el = { doc: mockDoc };
       const state = { isFullscreen: true };
       await renderFullscreenMode(el, state);
@@ -713,11 +671,8 @@ describe("ui.js", () => {
     });
 
     it("exits fullscreen if state is false and is fullscreen", async () => {
-      const mockDoc = {
-        fullscreenElement: {},
-        documentElement: { requestFullscreen: vi.fn() },
-        exitFullscreen: vi.fn(),
-      };
+      const mockDoc = createMockDocument();
+      mockDoc.fullscreenElement = {};
       const el = { doc: mockDoc };
       const state = { isFullscreen: false };
       await renderFullscreenMode(el, state);
@@ -725,11 +680,7 @@ describe("ui.js", () => {
     });
 
     it("does nothing if state matches current fullscreen", async () => {
-      const mockDoc = {
-        fullscreenElement: null,
-        documentElement: { requestFullscreen: vi.fn() },
-        exitFullscreen: vi.fn(),
-      };
+      const mockDoc = createMockDocument();
       const el = { doc: mockDoc };
       const state = { isFullscreen: false };
       await renderFullscreenMode(el, state);
@@ -740,50 +691,39 @@ describe("ui.js", () => {
 
   describe("bindFullscreenMode", () => {
     it("binds fullscreenBtn click to toggle fullscreen", () => {
-      const store = {
-        setState: vi.fn(),
-        getState: vi.fn().mockReturnValue({ isFullscreen: false }),
-      };
+      const store = createMockStore({ isFullscreen: false });
       const el = {
-        doc: document,
-        fullscreenBtn: document.createElement("button"),
+        doc: createMockDocument(),
+        fullscreenBtn: createMockButton(),
       };
       bindFullscreenMode(el, store);
       el.fullscreenBtn.click();
-      expect(store.setState).toHaveBeenCalledWith({ isFullscreen: true });
+      verifyStateUpdates(store.setState, [{ isFullscreen: true }]);
     });
 
     it("binds fullscreenchange to update state", () => {
-      const store = {
-        setState: vi.fn(),
-        getState: vi.fn().mockReturnValue({ isFullscreen: false }),
-      };
+      const store = createMockStore({ isFullscreen: false });
       const el = {
-        doc: document,
-        fullscreenBtn: document.createElement("button"),
+        doc: createMockDocument(),
+        fullscreenBtn: createMockButton(),
       };
       bindFullscreenMode(el, store);
-      document.fullscreenElement = document.documentElement;
-      document.dispatchEvent(new Event("fullscreenchange"));
-      expect(store.setState).toHaveBeenCalledWith({ isFullscreen: true });
+      el.doc.fullscreenElement = el.doc.documentElement;
+      el.doc.dispatchEvent(new Event("fullscreenchange"));
+      verifyStateUpdates(store.setState, [{ isFullscreen: true }]);
     });
   });
 
   describe("renderState", () => {
     it("calls render functions with correct params", async () => {
-      const mockDoc = {
-        fullscreenElement: null,
-        documentElement: { requestFullscreen: vi.fn() },
-        exitFullscreen: vi.fn(),
-        body: { style: {} },
-      };
+      const mockDoc = createMockDocument();
       const el = {
         doc: mockDoc,
-        msg: document.createElement("div"),
-        status: document.createElement("div"),
-        settingsModal: { style: { display: "none" } },
-        styleModal: { style: { display: "none" } },
-        aboutModal: { style: { display: "none" } },
+        msg: createMockDiv(),
+        status: createMockDiv(),
+        settingsModal: createMockModal(),
+        styleModal: createMockModal(),
+        aboutModal: createMockModal(),
         bgColor: { value: "#000" },
         textColor: { value: "#fff" },
         fontFamily: { value: "Arial" },
@@ -822,29 +762,29 @@ describe("ui.js", () => {
     it("subscribes to store and binds all", () => {
       const store = new StateContainer({});
       const el = {
-        doc: document,
-        msg: document.createElement("div"),
-        status: document.createElement("div"),
-        settingsBtn: document.createElement("button"),
-        settingsClose: document.createElement("button"),
-        settingsModal: { style: { display: "none" } },
-        styleBtn: document.createElement("button"),
-        styleClose: document.createElement("button"),
-        styleModal: { style: { display: "none" } },
-        aboutBtn: document.createElement("button"),
-        aboutModal: { style: { display: "none" } },
-        aboutClose: document.createElement("button"),
-        connectBtn: document.createElement("button"),
-        disconnectBtn: document.createElement("button"),
-        fullscreenBtn: document.createElement("button"),
-        bgColor: document.createElement("input"),
-        textColor: document.createElement("input"),
-        fontFamily: document.createElement("input"),
-        fontSize: document.createElement("input"),
-        baudRate: document.createElement("input"),
-        dataBits: document.createElement("input"),
-        parity: document.createElement("input"),
-        stopBits: document.createElement("input"),
+        doc: createMockDocument(),
+        msg: createMockDiv(),
+        status: createMockDiv(),
+        settingsBtn: createMockButton(),
+        settingsClose: createMockButton(),
+        settingsModal: createMockModal(),
+        styleBtn: createMockButton(),
+        styleClose: createMockButton(),
+        styleModal: createMockModal(),
+        aboutBtn: createMockButton(),
+        aboutModal: createMockModal(),
+        aboutClose: createMockButton(),
+        connectBtn: createMockButton(),
+        disconnectBtn: createMockButton(),
+        fullscreenBtn: createMockButton(),
+        bgColor: createMockInput(),
+        textColor: createMockInput(),
+        fontFamily: createMockInput(),
+        fontSize: createMockInput(),
+        baudRate: createMockInput(),
+        dataBits: createMockInput(),
+        parity: createMockInput(),
+        stopBits: createMockInput(),
       };
       bindStateToDOM(el, store);
       // Since subscribe is called, and render is subscribed, we can check by setting state and seeing if renderState was called indirectly

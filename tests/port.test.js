@@ -134,9 +134,55 @@ describe("Port", () => {
       expect(port.handleVT100Codes("a\x08\x08bc")).toBe("bc");
     });
 
+    it("should handle multiple consecutive backspaces", () => {
+      const port = new Port({}, {});
+      expect(port.handleVT100Codes("abc\x08\x08")).toBe("a");
+      expect(port.handleVT100Codes("hello\x08\x08world")).toBe("helworld");
+    });
+
+    it("should handle mixed VT100 codes", () => {
+      const port = new Port({}, {});
+      expect(port.handleVT100Codes("text\x1b[2Jmore\x08text")).toBe("mortext");
+      expect(port.handleVT100Codes("start\x1b[Kend\x08\x08")).toBe("start");
+    });
+
+    it("should handle empty string", () => {
+      const port = new Port({}, {});
+      expect(port.handleVT100Codes("")).toBe("");
+    });
+
+    it("should handle string with only control codes", () => {
+      const port = new Port({}, {});
+      expect(port.handleVT100Codes("\x1b[2J\x08\x1b[K")).toBe("");
+    });
+
     it("should return unchanged if no codes", () => {
       const port = new Port({}, {});
       expect(port.handleVT100Codes("hello world")).toBe("hello world");
+    });
+
+    it("should handle multiple VT100 codes in sequence", () => {
+      const port = new Port({}, {});
+      expect(port.handleVT100Codes("start\x1b[2J\x08middle\x1b[Kend")).toBe(
+        "middle",
+      );
+    });
+
+    it("should handle invalid VT100 sequences gracefully", () => {
+      const port = new Port({}, {});
+      expect(port.handleVT100Codes("before\x1b[invalidafter")).toBe(
+        "before\x1b[invalidafter",
+      );
+    });
+
+    it("should handle backspace at beginning", () => {
+      const port = new Port({}, {});
+      expect(port.handleVT100Codes("\x08\x08hello")).toBe("hello");
+    });
+
+    it("should handle consecutive backspaces", () => {
+      const port = new Port({}, {});
+      expect(port.handleVT100Codes("abc\x08\x08\x08\x08")).toBe("");
     });
   });
 
@@ -191,6 +237,64 @@ describe("Port", () => {
     it("should return early if no port is set", async () => {
       const port = new Port({}, {});
       await expect(port.readUntilClosed()).resolves.toBeUndefined();
+    });
+
+    it("should handle empty messages", async () => {
+      const onMessage = vi.fn();
+      const port = new Port({}, { onMessage, onDisconnect: vi.fn() });
+      mockReader.read
+        .mockResolvedValueOnce({
+          value: new TextEncoder().encode("\r\n"),
+          done: false,
+        })
+        .mockResolvedValueOnce({ done: true });
+      await port.connectTo(mockPort);
+      expect(onMessage).toHaveBeenCalledWith("");
+    });
+
+    it("should handle partial messages across reads", async () => {
+      const onMessage = vi.fn();
+      const port = new Port({}, { onMessage, onDisconnect: vi.fn() });
+      mockReader.read
+        .mockResolvedValueOnce({
+          value: new TextEncoder().encode("partial"),
+          done: false,
+        })
+        .mockResolvedValueOnce({
+          value: new TextEncoder().encode(" message\r\n"),
+          done: false,
+        })
+        .mockResolvedValueOnce({ done: true });
+      await port.connectTo(mockPort);
+      expect(onMessage).toHaveBeenCalledWith("partial message");
+    });
+
+    it("should handle multiple messages in single read", async () => {
+      const onMessage = vi.fn();
+      const port = new Port({}, { onMessage, onDisconnect: vi.fn() });
+      mockReader.read
+        .mockResolvedValueOnce({
+          value: new TextEncoder().encode("msg1\r\nmsg2\r\n"),
+          done: false,
+        })
+        .mockResolvedValueOnce({ done: true });
+      await port.connectTo(mockPort);
+      expect(onMessage).toHaveBeenCalledWith("msg1");
+      expect(onMessage).toHaveBeenCalledWith("msg2");
+    });
+
+    it("should handle large messages", async () => {
+      const onMessage = vi.fn();
+      const port = new Port({}, { onMessage, onDisconnect: vi.fn() });
+      const largeMessage = "x".repeat(10000) + "\r\n";
+      mockReader.read
+        .mockResolvedValueOnce({
+          value: new TextEncoder().encode(largeMessage),
+          done: false,
+        })
+        .mockResolvedValueOnce({ done: true });
+      await port.connectTo(mockPort);
+      expect(onMessage).toHaveBeenCalledWith("x".repeat(10000));
     });
   });
 
@@ -261,6 +365,23 @@ describe("Port", () => {
       expect(mockWriter.write).toHaveBeenCalledWith(data);
     });
 
+    it("should write empty string", async () => {
+      const port = new Port({});
+      await port.connectTo(mockPort);
+      await port.write("");
+      expect(mockWriter.write).toHaveBeenCalledWith(
+        new TextEncoder().encode(""),
+      );
+    });
+
+    it("should write empty Uint8Array", async () => {
+      const port = new Port({}, {});
+      const data = new Uint8Array([]);
+      await port.connectTo(mockPort);
+      await port.write(data);
+      expect(mockWriter.write).toHaveBeenCalledWith(new Uint8Array([]));
+    });
+
     it("should call onError on write error", async () => {
       const onError = vi.fn();
       const port = new Port({}, { onError });
@@ -274,6 +395,16 @@ describe("Port", () => {
       const port = new Port({}, {});
       await port.write("hello");
       expect(mockWriter.write).not.toHaveBeenCalled();
+    });
+
+    it("should handle writer release lock error", async () => {
+      const port = new Port({});
+      await port.connectTo(mockPort);
+      mockWriter.releaseLock.mockImplementation(() => {
+        throw new Error("release lock error");
+      });
+      // Should throw error since releaseLock error is not caught
+      await expect(port.write("test")).rejects.toThrow("release lock error");
     });
   });
 });

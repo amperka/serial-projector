@@ -150,6 +150,147 @@ describe("StateContainer", () => {
       bgColor: "#000000",
       fontSize: 20,
     });
+
+    describe("edge cases", () => {
+      it("should handle setState with undefined partial state", () => {
+        const container = new StateContainer(initialState);
+        const listener = vi.fn();
+        container.subscribe(listener);
+        container.setState(undefined);
+        expect(listener).toHaveBeenCalledWith(initialState);
+      });
+
+      it("should handle setState with null partial state", () => {
+        const container = new StateContainer(initialState);
+        const listener = vi.fn();
+        container.subscribe(listener);
+        container.setState(null);
+        expect(listener).toHaveBeenCalledWith(initialState);
+      });
+
+      it("should handle deeply nested objects", () => {
+        const container = new StateContainer({
+          nested: {
+            deep: {
+              value: "original",
+            },
+          },
+        });
+        container.setState({
+          nested: {
+            deep: {
+              value: "updated",
+            },
+          },
+        });
+        expect(container.getState().nested.deep.value).toBe("updated");
+      });
+
+      it("should handle adding new properties to nested objects", () => {
+        const container = new StateContainer({
+          nested: {
+            existing: "value",
+          },
+        });
+        container.setState({
+          nested: {
+            existing: "value",
+            newProp: "new value",
+          },
+        });
+        expect(container.getState().nested.existing).toBe("value");
+        expect(container.getState().nested.newProp).toBe("new value");
+      });
+
+      it("should handle removing properties from nested objects", () => {
+        const container = new StateContainer({
+          nested: {
+            prop1: "value1",
+            prop2: "value2",
+          },
+        });
+        container.setState({
+          nested: {
+            prop1: "value1",
+          },
+        });
+        expect(container.getState().nested.prop1).toBe("value1");
+        expect(container.getState().nested.prop2).toBeUndefined();
+      });
+
+      it("should handle array values in state", () => {
+        const container = new StateContainer({
+          items: [1, 2, 3],
+        });
+        container.setState({
+          items: [4, 5, 6],
+        });
+        expect(container.getState().items).toEqual([4, 5, 6]);
+      });
+
+      it("should handle function values in state (edge case)", () => {
+        const container = new StateContainer({});
+        const testFn = () => "test";
+        container.setState({
+          callback: testFn,
+        });
+        expect(container.getState().callback).toBe(testFn);
+      });
+
+      it("should handle symbol values in state (edge case)", () => {
+        const container = new StateContainer({});
+        const testSymbol = Symbol("test");
+        container.setState({
+          symbolProp: testSymbol,
+        });
+        expect(container.getState().symbolProp).toBe(testSymbol);
+      });
+
+      it("should handle multiple rapid setState calls", () => {
+        const container = new StateContainer(initialState);
+        const listener = vi.fn();
+        container.subscribe(listener);
+
+        container.setState({ message: "first" });
+        container.setState({ status: "updated" });
+        container.setState({ message: "second" });
+
+        expect(listener).toHaveBeenCalledTimes(3);
+        expect(listener).toHaveBeenNthCalledWith(1, { ...initialState, message: "first" });
+        expect(listener).toHaveBeenNthCalledWith(2, { ...initialState, message: "first", status: "updated" });
+        expect(listener).toHaveBeenNthCalledWith(3, { ...initialState, status: "updated", message: "second" });
+      });
+
+      it("should handle unsubscribe during state update", () => {
+        const container = new StateContainer(initialState);
+        const listener1 = vi.fn();
+        const listener2 = vi.fn();
+
+        const unsubscribe1 = container.subscribe(listener1);
+        container.subscribe(listener2);
+
+        container.setState({ message: "test1" });
+        unsubscribe1();
+        container.setState({ message: "test2" });
+
+        expect(listener1).toHaveBeenCalledTimes(1);
+        expect(listener2).toHaveBeenCalledTimes(2);
+      });
+
+      it("should handle subscribe during state update", () => {
+        const container = new StateContainer(initialState);
+        const listener1 = vi.fn();
+        const listener2 = vi.fn();
+
+        container.subscribe(listener1);
+        container.setState({ message: "test1" });
+        container.subscribe(listener2);
+        container.setState({ message: "test2" });
+
+        expect(listener1).toHaveBeenCalledTimes(2);
+        expect(listener2).toHaveBeenCalledTimes(1);
+      });
+    });
   });
 
   it("should handle empty partial state updates", () => {

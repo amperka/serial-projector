@@ -1,14 +1,10 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { saveState, loadState } from "../src/storage.js";
+import { mockLocalStorage } from "./test-helpers.js";
 
 describe("storage.js", () => {
   beforeEach(() => {
-    vi.stubGlobal("localStorage", {
-      getItem: vi.fn(),
-      setItem: vi.fn(),
-      removeItem: vi.fn(),
-      clear: vi.fn(),
-    });
+    mockLocalStorage();
   });
 
   describe("saveState", () => {
@@ -150,6 +146,106 @@ describe("storage.js", () => {
       const result = loadState();
       expect(result).toEqual({
         lastPortInfo: {},
+      });
+    });
+
+
+
+    it("should handle null values in state", () => {
+      const state = { bgColor: null, textColor: "#000000" };
+      saveState(state);
+      expect(localStorage.setItem).toHaveBeenCalledWith("state_bgColor", null);
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "state_textColor",
+        "#000000",
+      );
+    });
+
+    it("should handle undefined values in state", () => {
+      const state = { bgColor: undefined, textColor: "#000000" };
+      saveState(state);
+      expect(localStorage.setItem).toHaveBeenCalledWith("state_bgColor", undefined);
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "state_textColor",
+        "#000000",
+      );
+    });
+
+    it("should handle empty string values", () => {
+      const state = { bgColor: "", textColor: "#000000" };
+      saveState(state);
+      expect(localStorage.setItem).toHaveBeenCalledWith("state_bgColor", "");
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "state_textColor",
+        "#000000",
+      );
+    });
+
+    it("should handle zero values", () => {
+      const state = { fontSize: 0, baudRate: 9600 };
+      saveState(state);
+      expect(localStorage.setItem).toHaveBeenCalledWith("state_fontSize", 0);
+      expect(localStorage.setItem).toHaveBeenCalledWith("state_baudRate", 9600);
+    });
+
+    it("should handle negative numbers", () => {
+      const state = { fontSize: -1, baudRate: 9600 };
+      saveState(state);
+      expect(localStorage.setItem).toHaveBeenCalledWith("state_fontSize", -1);
+      expect(localStorage.setItem).toHaveBeenCalledWith("state_baudRate", 9600);
+    });
+
+    it("should handle very large numbers", () => {
+      const state = { fontSize: Number.MAX_SAFE_INTEGER, baudRate: 9600 };
+      saveState(state);
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "state_fontSize",
+        Number.MAX_SAFE_INTEGER,
+      );
+      expect(localStorage.setItem).toHaveBeenCalledWith("state_baudRate", 9600);
+    });
+
+    it("should handle circular object references", () => {
+      const state = { bgColor: "#ffffff" };
+      state.circular = state; // Create circular reference
+      saveState(state);
+      // Should handle circular reference gracefully (JSON.stringify should throw)
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "state_bgColor",
+        "#ffffff",
+      );
+    });
+
+    it("should parse invalid JSON as empty object", () => {
+      localStorage.getItem.mockImplementation((key) => {
+        if (key === "state_lastPortInfo") return "invalid json {";
+        return null;
+      });
+      const result = loadState();
+      expect(result).toEqual({
+        lastPortInfo: {},
+      });
+    });
+
+    it("should handle empty JSON string", () => {
+      localStorage.getItem.mockImplementation((key) => {
+        if (key === "state_lastPortInfo") return "";
+        return null;
+      });
+      const result = loadState();
+      expect(result).toEqual({
+        lastPortInfo: {},
+      });
+    });
+
+    it("should handle null JSON string", () => {
+      localStorage.getItem.mockImplementation((key) => {
+        if (key === "state_lastPortInfo") return "null";
+        return null;
+      });
+      const result = loadState();
+      expect(result).toEqual({
+        lastPortInfo: null,
       });
     });
   });
