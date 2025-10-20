@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serial Projector</title>
+    <meta
+      name="description"
+      content="A simple web application that shows last line of text got from serial port with a big font."
+    />
+    <link rel="icon" type="image/png" href="icons/icon-192.png" />
+    <link
+      rel="apple-touch-icon"
+      href="icons/apple-touch-icon.png"
+      sizes="180x180"
+    />
+    <link rel="mask-icon" href="icons/maskable-icon-512.png" color="#448aff" />
+    <meta name="theme-color" content="#f6871f" />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <main>
+      <div id="message">🔌</div>
+    </main>
+
+    <div id="status">Disconnected</div>
+
+    <div id="controls">
+      <button id="settingsBtn" title="Connection">⛓️‍💥</button>
+      <button id="styleBtn" title="Look & Feel">🎨</button>
+      <button id="fullscreenBtn" title="Fullscreen">📺</button>
+      <button id="aboutBtn" title="About">❔</button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+      <div class="modal-content">
+        <h2>Connection Settings</h2>
+        <label
+          >Baud rate:
+          <select id="baudRate">
+            <option>9600</option>
+            <option>19200</option>
+            <option>38400</option>
+            <option>57600</option>
+            <option>115200</option>
+          </select>
+        </label>
+        <label
+          >Data bits:
+          <select id="dataBits">
+            <option value="7">7</option>
+            <option value="8" selected>8</option>
+          </select>
+        </label>
+        <label
+          >Parity:
+          <select id="parity">
+            <option value="none" selected>None</option>
+            <option value="odd">Odd</option>
+            <option value="even">Even</option>
+          </select>
+        </label>
+        <label
+          >Stop bits:
+          <select id="stopBits">
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+          </select>
+        </label>
+        <button id="connectBtn" title="Connect and turn autoconnection on">
+          Connect
+        </button>
+        <button
+          id="disconnectBtn"
+          title="Disconnect and turn autoconnection off"
+        >
+          Disconnect
+        </button>
+        <button id="closeSettings">Close</button>
+      </div>
+    </div>
+
+    <!-- Style Modal -->
+    <div class="modal" id="styleModal">
+      <div class="modal-content">
+        <h2>Style Settings</h2>
+        <label
+          >Background: <input type="color" id="bgColor" value="#f6871f"
+        /></label>
+        <label
+          >Text color: <input type="color" id="textColor" value="#ffffff"
+        /></label>
+        <label
+          >Font family:
+          <select id="fontFamily">
+            <option value="sans-serif">Sans-serif</option>
+            <option value="serif">Serif</option>
+            <option value="monospace">Monospace</option>
+          </select>
+        </label>
+        <label
+          >Font size:
+          <input
+            type="number"
+            id="fontSize"
+            min="1"
+            max="100"
+            step="1"
+            value="10"
+          />
+        </label>
+        <button id="closeStyle">Close</button>
+      </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal" id="aboutModal">
+      <div class="modal-content">
+        <p>
+          Serial Projector is made by
+          <a href="http://amperka.ru" target="_blank">Amperka LLC</a>. From
+          Russia with Love :-*
+        </p>
+        <p>
+          Application is distributed as is without any warranties on terms of
+          MIT License.
+          <a href="https://github.com/amperka/serial-projector" target="_blank"
+            >Source code</a
+          >
+          is available on GitHub.
+        </p>
+        <button id="closeAbout">Close</button>
+      </div>
+    </div>
+
+    <script type="module">
+      import { init } from "./src/main.js";
+      init();
+    </script>
+  </body>
+</html>
