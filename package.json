@@ -12,7 +12,7 @@
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "lint": "eslint ./src",
-    "test": "vitest --coverage"
+    "test": "vitest --coverage --silent"
   },
   "devDependencies": {
     "@types/w3c-web-serial": "^1.0.8",
