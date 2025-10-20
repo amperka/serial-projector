@@ -809,8 +809,6 @@ describe("ui.js", () => {
         message: "<p>msg</p>",
         status: "connected",
       };
-      // Mock loadStateFromDOM to return old state
-      const oldState = loadStateFromDOM(el);
       await renderState(el, state);
       // Check some changes
       expect(el.settingsModal.style.display).toBe("flex");
