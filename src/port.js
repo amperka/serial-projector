@@ -1,5 +1,10 @@
 /* eslint no-control-regex: "off" */
 
+import { uint8ArrayConcat, uint8ArraySplitBySeq } from "./uint8array.js";
+
+const LINE_SPLIT = "\r\n";
+const LINE_SPLIT_BYTES = new TextEncoder().encode(LINE_SPLIT);
+
 /**
  * @typedef {Object} PortEventHandlers
  * @property {(port: SerialPort) => void} onConnect
@@ -95,7 +100,7 @@ class Port {
   async readUntilClosed() {
     if (!this.#port) return;
     this.#keepReading = true;
-    let buffer = "";
+    let buffer = new Uint8Array(0);
 
     while (this.#port.readable && this.#keepReading) {
       this.#reader = this.#port.readable.getReader();
@@ -104,13 +109,14 @@ class Port {
           const { value, done } = await this.#reader.read();
           if (done) break; // reader.cancel() has been called.
           if (value) {
-            console.debug("Raw chunk: ", value);
-            buffer += new TextDecoder().decode(value);
+            console.debug("[Port] Raw chunk received: ", value);
+            buffer = uint8ArrayConcat(buffer, value);
           }
-          const parts = buffer.split("\n");
+          const parts = uint8ArraySplitBySeq(buffer, LINE_SPLIT_BYTES);
           buffer = parts.pop();
           for (const msg of parts) {
-            this.onMessage(this.handleVT100Codes(msg));
+            const text = new TextDecoder().decode(msg);
+            this.onMessage(this.handleVT100Codes(text));
           }
         }
       } catch (error) {
