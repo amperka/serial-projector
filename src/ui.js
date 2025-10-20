@@ -34,13 +34,13 @@
  * Checks if modal window is closed
  * @param {HTMLElement} el
  */
-const isModalClosed = (el) => ["", "none"].includes(el.style.display);
+export const isModalClosed = (el) => ["", "none"].includes(el.style.display);
 
 /**
  * Open modal
  * @param {HTMLElement} el
  */
-const openModal = (el) => {
+export const openModal = (el) => {
   el.style.display = "flex";
 };
 
@@ -48,7 +48,7 @@ const openModal = (el) => {
  * Close modal
  * @param {HTMLElement} el
  */
-const closeModal = (el) => {
+export const closeModal = (el) => {
   el.style.display = "none";
 };
 
@@ -57,7 +57,7 @@ const closeModal = (el) => {
  * @param {AppHTMLElements} el
  * @returns {State}
  */
-const loadStateFromDOM = (el) => ({
+export const loadStateFromDOM = (el) => ({
   bgColor: el.bgColor.value,
   textColor: el.textColor.value,
   fontFamily: el.fontFamily.value,
@@ -80,7 +80,7 @@ const loadStateFromDOM = (el) => ({
  * @param {State} state
  * @param {State} oldState
  */
-const renderPortSettings = (el, state, oldState) => {
+export const renderPortSettings = (el, state, oldState) => {
   if (state.baudRate !== oldState.baudRate) {
     el.baudRate.value = state.baudRate;
   }
@@ -103,7 +103,7 @@ const renderPortSettings = (el, state, oldState) => {
  * @param {AppHTMLElements} el
  * @param {StateContainer} store
  */
-const bindPortSettings = (el, store) => {
+export const bindPortSettings = (el, store) => {
   el.settingsBtn.addEventListener("click", () =>
     store.setState({
       isSettingsModalOpened: true,
@@ -140,7 +140,7 @@ const bindPortSettings = (el, store) => {
  * @param {State} state
  * @param {State} oldState
  */
-const renderStyleSettings = (el, state, oldState) => {
+export const renderStyleSettings = (el, state, oldState) => {
   if (state.bgColor !== oldState.bgColor) {
     el.bgColor.value = state.bgColor;
   }
@@ -167,7 +167,7 @@ const renderStyleSettings = (el, state, oldState) => {
  * @param {AppHTMLElements} el
  * @param {StateContainer} store
  */
-const bindStyleSettings = (el, store) => {
+export const bindStyleSettings = (el, store) => {
   el.styleBtn.addEventListener("click", () =>
     store.setState({
       isSettingsModalOpened: false,
@@ -197,7 +197,7 @@ const bindStyleSettings = (el, store) => {
  * @param {AppHTMLElements} el
  * @param {StateContainer} store
  */
-const bindAbout = (el, store) => {
+export const bindAbout = (el, store) => {
   el.aboutBtn.addEventListener("click", () =>
     store.setState({
       isSettingsModalOpened: false,
@@ -216,7 +216,7 @@ const bindAbout = (el, store) => {
  * @param {State} state
  * @param {State} oldState
  */
-const renderModalState = (el, state, oldState) => {
+export const renderModalState = (el, state, oldState) => {
   if (state.isSettingsModalOpened !== oldState.isSettingsModalOpened) {
     if (state.isSettingsModalOpened) openModal(el.settingsModal);
     if (!state.isSettingsModalOpened) closeModal(el.settingsModal);
@@ -237,7 +237,7 @@ const renderModalState = (el, state, oldState) => {
  * Sanitize HTML before render
  * @param {string} html
  */
-const sanitizeHtml = (html) =>
+export const sanitizeHtml = (html) =>
   html
     .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
     .replace(/ on\w+="[^"]*"/g, "");
@@ -248,7 +248,7 @@ const sanitizeHtml = (html) =>
  * @param {State} state
  * @param {State} oldState
  */
-const renderMessages = (el, state, oldState) => {
+export const renderMessages = (el, state, oldState) => {
   if (state.message !== oldState.message) {
     el.msg.innerHTML = sanitizeHtml(state.message);
   }
@@ -263,7 +263,7 @@ const renderMessages = (el, state, oldState) => {
  * @param {AppHTMLElements} el
  * @param {State} state
  */
-const renderFullscreenMode = async (el, state) => {
+export const renderFullscreenMode = async (el, state) => {
   const isFullscreen = Boolean(el.doc.fullscreenElement);
   if (state.isFullscreen === isFullscreen) return;
   if (state.isFullscreen && !isFullscreen)
@@ -276,7 +276,7 @@ const renderFullscreenMode = async (el, state) => {
  * @param {AppHTMLElements} el
  * @param {StateContainer} store
  */
-const bindFullscreenMode = (el, store) => {
+export const bindFullscreenMode = (el, store) => {
   el.fullscreenBtn.addEventListener("click", () => {
     const isFullscreen = Boolean(el.doc.fullscreenElement);
     store.setState({ isFullscreen: !isFullscreen });
@@ -296,7 +296,7 @@ const bindFullscreenMode = (el, store) => {
  * @param {AppHTMLElements} el
  * @param {State} state
  */
-const renderState = async (el, state) => {
+export const renderState = async (el, state) => {
   const oldState = loadStateFromDOM(el);
 
   renderPortSettings(el, state, oldState);
@@ -311,7 +311,7 @@ const renderState = async (el, state) => {
  * @param {AppHTMLElements} el
  * @param {StateContainer} store
  */
-const bindStateToDOM = (el, store) => {
+export const bindStateToDOM = (el, store) => {
   /** @param {State} state */
   const render = (state) => renderState(el, state);
   store.subscribe(render);
@@ -321,5 +321,3 @@ const bindStateToDOM = (el, store) => {
   bindStyleSettings(el, store);
   bindAbout(el, store);
 };
-
-export { loadStateFromDOM, bindStateToDOM };
