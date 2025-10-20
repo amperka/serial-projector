@@ -14,8 +14,9 @@ Optionally, install as application.
 
 ## Usage
 
-Just send text to serial. Once Serial Projector will see end of line (`\n`)
-the text on sceen will be updated.
+Just send text to serial. Once Serial Projector will see a carriage return
+character (ASCII 13, or `\r`) and a newline character (ASCII 10, or `\n`) the
+text on sceen will be updated.
 
 You can send UTF-8 unicode and HTML.
 
