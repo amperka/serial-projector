@@ -237,14 +237,26 @@ export const renderModalState = (el, state, oldState) => {
  * Sanitize HTML before render
  * @param {string} html
  */
-export const sanitizeHtml = (html) =>
-  html
+export const sanitizeHtml = (html) => {
+  const fixedByRegexpHtml = html
     // fix broken degree character  - from the Yodo Book example
-    .replaceAll("\uFFFDC", "°C")
-    // no scripts
-    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
-    .replace(/ on\w+="[^"]*"/g, "")
-    .replace(/ on\w+='[^']*'/g, "");
+    .replaceAll("\uFFFDC", "°C");
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(fixedByRegexpHtml, "text/html");
+
+  // remove script tags
+  doc.querySelectorAll("script").forEach((script) => script.remove());
+
+  // remove on* attributes
+  doc.querySelectorAll("*").forEach((el) => {
+    el.getAttributeNames().forEach((attr) => {
+      if (attr.startsWith("on")) el.removeAttribute(attr);
+    });
+  });
+
+  return doc.body.innerHTML;
+};
 
 /**
  * Render messages
