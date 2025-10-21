@@ -56,7 +56,11 @@ const loadState = () => {
       state[k] = value === "true" ? true : false;
     }
     if (PERSIST_STATE_OBJ_KEYS.includes(k)) {
-      state[k] = JSON.parse(value || "{}");
+      try {
+        state[k] = JSON.parse(value || "{}");
+      } catch {
+        state[k] = {};
+      }
     }
   }
   return state;

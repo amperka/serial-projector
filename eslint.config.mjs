@@ -1,4 +1,4 @@
-import { defineConfig, globalIgnores } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config"; // eslint-disable-line import/no-unresolved
 import importPlugin from "eslint-plugin-import";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import globals from "globals";

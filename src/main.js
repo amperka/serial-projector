@@ -39,7 +39,7 @@ const appHtmlElements = {
  * @param {CallableFunction} func
  * @param {number} timeout
  */
-function debounce(func, timeout = 1000) {
+export function debounce(func, timeout = 1000) {
   let timer;
   return (...args) => {
     clearTimeout(timer);
@@ -52,11 +52,11 @@ function debounce(func, timeout = 1000) {
  * @param {Store} store
  * @returns {import("./port.js").PortEventHandlers}
  */
-const makePortHandlers = (store) => ({
+export const makePortHandlers = (store) => ({
   onConnect: (port) => {
     console.info("Port connected");
     store
-      .setState({ lastPostInfo: null })
+      .setState({ lastPortInfo: null })
       .setState({ lastPortInfo: port.getInfo(), status: "Connected" });
   },
   onDisconnect: () => {
@@ -78,18 +78,33 @@ const makePortHandlers = (store) => ({
  * @param {State} state
  * @returns {SerialOptions}
  */
-const getPortOptsFromState = (state) => ({
+export const getPortOptsFromState = (state) => ({
   baudRate: state.baudRate,
   dataBits: state.dataBits,
   parity: state.parity,
   stopBits: state.stopBits,
 });
 
-export async function init() {
-  // init store with defauls from DOM
-  const initialState = loadStateFromDOM(appHtmlElements);
-  const store = new StateContainer(initialState);
+/**
+ * Get StateContainer
+ * @param {AppHTMLElements} el
+ * @returns {StateContainer}
+ */
+export const getStore = (el) => new StateContainer(loadStateFromDOM(el));
 
+/**
+ * App entrypoint
+ * @param {StateContainer} store
+ * @param {typeof Port} SerialPort
+ * @param {HTMLElement} connectBtn
+ * @param {HTMLElement} disconnectBtn
+ */
+export async function init(
+  store = getStore(appHtmlElements),
+  SerialPort = Port,
+  connectBtn = appHtmlElements.connectBtn,
+  disconnectBtn = appHtmlElements.disconnectBtn,
+) {
   // bind UI elements to store
   bindStateToDOM(appHtmlElements, store);
 
@@ -115,17 +130,17 @@ export async function init() {
     }
   };
 
-  const port = new Port(
+  const port = new SerialPort(
     getPortOptsFromState(store.getState()),
     makePortHandlers(store),
   );
   console.debug(port); // can use port directly for debugging
 
   // connect on manual port select
-  appHtmlElements.connectBtn.addEventListener("click", runManualConnect);
+  connectBtn.addEventListener("click", runManualConnect);
 
   // force disconnection
-  appHtmlElements.disconnectBtn.addEventListener("click", async () => {
+  disconnectBtn.addEventListener("click", async () => {
     await port.stopReading();
     await port.forgetAll();
     store.setState({ lastPortInfo: {} });

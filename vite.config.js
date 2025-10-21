@@ -1,9 +1,14 @@
 // vite.config.js
-import { resolve } from "path";
+/* eslint-env node */
+import { fileURLToPath } from "node:url";
+import { resolve, dirname } from "node:path";
 import { defineConfig } from "vite";
 import eslint from "vite-plugin-eslint";
-import legacy from "@vitejs/plugin-legacy";
+import legacy from "@vitejs/plugin-legacy"; // eslint-disable-line import/no-unresolved
 import { VitePWA } from "vite-plugin-pwa";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig({
   publicDir: "public",
