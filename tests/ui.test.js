@@ -554,7 +554,7 @@ describe("ui.js", () => {
     const sanitizeTestCases = [
       {
         description: "removes script tags",
-        input: "<p>hello</p><script>alert(1)</script><p>world</p>",
+        input: "<p>hello</p><script>alert(1)</script foo='bar'><p>world</p>",
         expected: "<p>hello</p><p>world</p>",
       },
       {
@@ -611,7 +611,7 @@ describe("ui.js", () => {
       {
         description: "handles malformed HTML",
         input: "<p>unclosed tag",
-        expected: "<p>unclosed tag",
+        expected: "<p>unclosed tag</p>",
       },
       {
         description: "removes script-like content in attributes",
