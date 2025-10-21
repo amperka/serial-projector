@@ -1,5 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
-import { vi } from "vitest";
+import { expect, vi } from "vitest";
 
 /**
  * Resets all global mocks to ensure test isolation.
