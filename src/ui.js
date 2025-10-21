@@ -239,8 +239,12 @@ export const renderModalState = (el, state, oldState) => {
  */
 export const sanitizeHtml = (html) =>
   html
+    // fix broken degree character  - from the Yodo Book example
+    .replaceAll("\uFFFDC", "°C")
+    // no scripts
     .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
-    .replace(/ on\w+="[^"]*"/g, "");
+    .replace(/ on\w+="[^"]*"/g, "")
+    .replace(/ on\w+='[^']*'/g, "");
 
 /**
  * Render messages
