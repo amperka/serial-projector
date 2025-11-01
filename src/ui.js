@@ -238,12 +238,8 @@ export const renderModalState = (el, state, oldState) => {
  * @param {string} html
  */
 export const sanitizeHtml = (html) => {
-  const fixedByRegexpHtml = html
-    // fix broken degree character  - from the Yodo Book example
-    .replaceAll("\uFFFDC", "°C");
-
   const parser = new DOMParser();
-  const doc = parser.parseFromString(fixedByRegexpHtml, "text/html");
+  const doc = parser.parseFromString(html, "text/html");
 
   // remove script tags
   doc.querySelectorAll("script").forEach((script) => script.remove());

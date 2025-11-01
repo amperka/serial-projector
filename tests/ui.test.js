@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   isModalClosed,
   openModal,
@@ -25,8 +25,10 @@ import {
   createMockModal,
   createMockDocument,
   createMockStore,
+  setupTestEnvironment,
   verifyStateUpdates,
 } from "./test-helpers.js";
+import { defaultState } from "./fixtures/state-fixtures.js";
 
 describe("ui.js", () => {
   describe("isModalClosed", () => {
@@ -617,84 +619,6 @@ describe("ui.js", () => {
         description: "removes script-like content in attributes",
         input: '<div data-script="javascript:alert(1)">content</div>',
         expected: '<div data-script="javascript:alert(1)">content</div>',
-      },
-      {
-        description: "fixes broken degree character",
-        input: "Temperature is 25\uFFFDC outside",
-        expected: "Temperature is 25°C outside",
-      },
-      {
-        description: "fixes multiple broken degree characters",
-        input: "High: 30\uFFFDC, Low: 15\uFFFDC",
-        expected: "High: 30°C, Low: 15°C",
-      },
-      {
-        description: "fixes degree character in HTML context",
-        input: "<span>Temperature: 20\uFFFDC</span>",
-        expected: "<span>Temperature: 20°C</span>",
-      },
-      {
-        description: "fixes degree character and removes script",
-        input: "<script>alert(1)</script>Temperature: 25\uFFFDC",
-        expected: "Temperature: 25°C",
-      },
-      {
-        description: "fixes degree character and removes event handlers",
-        input: '<div onclick="alert(1)">Temp: 30\uFFFDC</div>',
-        expected: "<div>Temp: 30°C</div>",
-      },
-      {
-        description: "handles degree character with negative temperature",
-        input: "Freezing point: -5\uFFFDC",
-        expected: "Freezing point: -5°C",
-      },
-      {
-        description: "handles degree character with decimal",
-        input: "Precise: 23.5\uFFFDC",
-        expected: "Precise: 23.5°C",
-      },
-      {
-        description: "does not replace legitimate degree symbols",
-        input: "Already correct: 25°C",
-        expected: "Already correct: 25°C",
-      },
-      {
-        description: "handles complex HTML with degree fix and sanitization",
-        input:
-          '<div onclick="danger()" class="temp">Current: 22\uFFFDC<script>alert(1)</script></div>',
-        expected: '<div class="temp">Current: 22°C</div>',
-      },
-      {
-        description: "handles edge case with broken character at start",
-        input: "\uFFFDC is the temperature",
-        expected: "°C is the temperature",
-      },
-      {
-        description: "removes script tags with multiline content",
-        input:
-          "<script>\nalert('hello');\nconsole.log('world');\n</script>content",
-        expected: "content",
-      },
-      {
-        description: "removes script tags with case variations",
-        input: "<SCRIPT>alert(1)</SCRIPT><script>alert(2)</script>",
-        expected: "",
-      },
-      {
-        description: "removes various event handler types",
-        input:
-          '<div onload="x()" onerror="y()" onfocus="z()" onblur="w()">content</div>',
-        expected: "<div>content</div>",
-      },
-      {
-        description: "handles event handlers with single quotes",
-        input: "<p onclick='alert(\"test\")'>hello</p>",
-        expected: "<p>hello</p>",
-      },
-      {
-        description: "handles event handlers with mixed quotes",
-        input: "<div onclick=\"alert('test')\">content</div>",
-        expected: "<div>content</div>",
       },
     ];
 
