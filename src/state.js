@@ -8,6 +8,7 @@
  * @property {number} dataBits - Data bits
  * @property {string} parity - Parity
  * @property {number} stopBits - Stop bits
+ * @property {string} encoding - Text encoding
  * @property {boolean} isFullscreen - Fullscreen mode state
  * @property {boolean} isSettingsModalOpened - Settings modal state
  * @property {boolean} isStyleModalOpened - Style modal state

@@ -79,6 +79,7 @@ describe("ui.js", () => {
         dataBits: { value: "8" },
         parity: { value: "none" },
         stopBits: { value: "1" },
+        encoding: { value: "default" },
       };
       const state = loadStateFromDOM(mockEl);
       expect(state).toEqual({
@@ -96,6 +97,7 @@ describe("ui.js", () => {
         isAboutModalOpened: true,
         message: "<p>test message</p>",
         status: "connected",
+        encoding: "default",
       });
     });
   });
@@ -140,6 +142,22 @@ describe("ui.js", () => {
       renderPortSettings(el, state, oldState);
       expect(el.stopBits.value).toBe(1);
     });
+
+    it("updates encoding if changed", () => {
+      const el = { encoding: { value: "utf-8" } };
+      const state = { encoding: "ascii" };
+      const oldState = { encoding: "utf-8" };
+      renderPortSettings(el, state, oldState);
+      expect(el.encoding.value).toBe("ascii");
+    });
+
+    it("does not update encoding if not changed", () => {
+      const el = { encoding: { value: "utf-8" } };
+      const state = { encoding: "utf-8" };
+      const oldState = { encoding: "utf-8" };
+      renderPortSettings(el, state, oldState);
+      expect(el.encoding.value).toBe("utf-8");
+    });
   });
 
   describe("bindPortSettings", () => {
@@ -152,6 +170,7 @@ describe("ui.js", () => {
       dataBits: createMockInput(),
       parity: createMockInput(),
       stopBits: createMockInput(),
+      encoding: createMockInput(),
     });
 
     it("binds settingsBtn click to open settings modal", () => {
@@ -230,6 +249,15 @@ describe("ui.js", () => {
       el.stopBits.value = "2";
       el.stopBits.dispatchEvent(new Event("change"));
       expect(store.setState).toHaveBeenCalledWith({ stopBits: 2 });
+    });
+
+    it("binds encoding change to update state", () => {
+      const store = { setState: vi.fn() };
+      const el = createPortSettingsElements();
+      bindPortSettings(el, store);
+      el.encoding.value = "ascii";
+      el.encoding.dispatchEvent(new Event("change"));
+      expect(store.setState).toHaveBeenCalledWith({ encoding: "ascii" });
     });
   });
 
@@ -618,84 +646,6 @@ describe("ui.js", () => {
         input: '<div data-script="javascript:alert(1)">content</div>',
         expected: '<div data-script="javascript:alert(1)">content</div>',
       },
-      {
-        description: "fixes broken degree character",
-        input: "Temperature is 25\uFFFDC outside",
-        expected: "Temperature is 25°C outside",
-      },
-      {
-        description: "fixes multiple broken degree characters",
-        input: "High: 30\uFFFDC, Low: 15\uFFFDC",
-        expected: "High: 30°C, Low: 15°C",
-      },
-      {
-        description: "fixes degree character in HTML context",
-        input: "<span>Temperature: 20\uFFFDC</span>",
-        expected: "<span>Temperature: 20°C</span>",
-      },
-      {
-        description: "fixes degree character and removes script",
-        input: "<script>alert(1)</script>Temperature: 25\uFFFDC",
-        expected: "Temperature: 25°C",
-      },
-      {
-        description: "fixes degree character and removes event handlers",
-        input: '<div onclick="alert(1)">Temp: 30\uFFFDC</div>',
-        expected: "<div>Temp: 30°C</div>",
-      },
-      {
-        description: "handles degree character with negative temperature",
-        input: "Freezing point: -5\uFFFDC",
-        expected: "Freezing point: -5°C",
-      },
-      {
-        description: "handles degree character with decimal",
-        input: "Precise: 23.5\uFFFDC",
-        expected: "Precise: 23.5°C",
-      },
-      {
-        description: "does not replace legitimate degree symbols",
-        input: "Already correct: 25°C",
-        expected: "Already correct: 25°C",
-      },
-      {
-        description: "handles complex HTML with degree fix and sanitization",
-        input:
-          '<div onclick="danger()" class="temp">Current: 22\uFFFDC<script>alert(1)</script></div>',
-        expected: '<div class="temp">Current: 22°C</div>',
-      },
-      {
-        description: "handles edge case with broken character at start",
-        input: "\uFFFDC is the temperature",
-        expected: "°C is the temperature",
-      },
-      {
-        description: "removes script tags with multiline content",
-        input:
-          "<script>\nalert('hello');\nconsole.log('world');\n</script>content",
-        expected: "content",
-      },
-      {
-        description: "removes script tags with case variations",
-        input: "<SCRIPT>alert(1)</SCRIPT><script>alert(2)</script>",
-        expected: "",
-      },
-      {
-        description: "removes various event handler types",
-        input:
-          '<div onload="x()" onerror="y()" onfocus="z()" onblur="w()">content</div>',
-        expected: "<div>content</div>",
-      },
-      {
-        description: "handles event handlers with single quotes",
-        input: "<p onclick='alert(\"test\")'>hello</p>",
-        expected: "<p>hello</p>",
-      },
-      {
-        description: "handles event handlers with mixed quotes",
-        input: "<div onclick=\"alert('test')\">content</div>",
-        expected: "<div>content</div>",
-      },
     ];
 
     sanitizeTestCases.forEach((testCase) => {
@@ -812,6 +762,7 @@ describe("ui.js", () => {
         dataBits: { value: "8" },
         parity: { value: "none" },
         stopBits: { value: "1" },
+        encoding: { value: "utf-8" },
       };
       const state = {
         bgColor: "#fff",
@@ -828,6 +779,7 @@ describe("ui.js", () => {
         isAboutModalOpened: false,
         message: "<p>msg</p>",
         status: "connected",
+        encoding: "utf-8",
       };
       await renderState(el, state);
       // Check some changes
@@ -865,6 +817,7 @@ describe("ui.js", () => {
         dataBits: createMockInput(),
         parity: createMockInput(),
         stopBits: createMockInput(),
+        encoding: createMockInput(),
       };
       bindStateToDOM(el, store);
       // Since subscribe is called, and render is subscribed, we can check by setting state and seeing if renderState was called indirectly

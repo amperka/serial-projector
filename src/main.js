@@ -2,6 +2,8 @@ import { StateContainer } from "./state.js";
 import { loadState, saveState } from "./storage.js";
 import { loadStateFromDOM, bindStateToDOM } from "./ui.js";
 import { Port } from "./port.js";
+import { mkDecoder } from "./encoding.js";
+import { isEspruino } from "./board.js";
 
 /**
  * @typedef {import('./ui.js').AppHTMLElements} AppHTMLElements
@@ -32,6 +34,7 @@ const appHtmlElements = {
   dataBits: document.getElementById("dataBits"),
   parity: document.getElementById("parity"),
   stopBits: document.getElementById("stopBits"),
+  encoding: document.getElementById("encoding"),
 };
 
 /**
@@ -124,7 +127,14 @@ export async function init(
   const portHandlers = makePortHandlers(store);
   const runManualConnect = async () => {
     try {
-      await port.connectTo(await port.requestPort());
+      const requested = await port.requestPort();
+      if (
+        store.getState().encoding === "default" &&
+        isEspruino(requested.getInfo())
+      ) {
+        store.setState({ encoding: "x-espruino-mixed-utf8" });
+      }
+      await port.connectTo(requested);
     } catch (e) {
       portHandlers.onError(e);
     }
@@ -132,6 +142,7 @@ export async function init(
 
   const port = new SerialPort(
     getPortOptsFromState(store.getState()),
+    mkDecoder(store.getState().encoding),
     makePortHandlers(store),
   );
   console.debug(port); // can use port directly for debugging
@@ -144,6 +155,13 @@ export async function init(
     await port.stopReading();
     await port.forgetAll();
     store.setState({ lastPortInfo: {} });
+  });
+
+  // update decoder
+  store.subscribe((state) => {
+    if (port.decoder.encoding !== state.encoding) {
+      port.decoder = mkDecoder(state.encoding);
+    }
   });
 
   const connectToPrevPort = async () =>

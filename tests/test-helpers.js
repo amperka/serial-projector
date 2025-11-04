@@ -85,6 +85,7 @@ export function setupMockElements() {
     dataBits: { value: 8 },
     parity: { value: "none" },
     stopBits: { value: 1 },
+    encoding: { value: "default" },
   };
   return mockElements;
 }

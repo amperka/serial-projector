@@ -6,7 +6,13 @@
 
 const PERSIST_STATE_KEY_PREFIX = "state_";
 /** @type {(keyof State)[]} */
-const PERSIST_STATE_STR_KEYS = ["bgColor", "textColor", "fontFamily", "parity"];
+const PERSIST_STATE_STR_KEYS = [
+  "bgColor",
+  "textColor",
+  "fontFamily",
+  "parity",
+  "encoding",
+];
 /** @type {(keyof State)[]} */
 const PERSIST_STATE_NUM_KEYS = ["fontSize", "baudRate", "dataBits", "stopBits"];
 /** @type {(keyof State)[]} */
