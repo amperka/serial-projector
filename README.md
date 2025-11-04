@@ -43,3 +43,5 @@ Written by Victor Nakoryakov, Sergei Korolev © Amperka LLC.
 
 This software may be modified and distributed under the terms
 of the MIT license. See the LICENSE file for details.
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/amperka/serial-projector)
