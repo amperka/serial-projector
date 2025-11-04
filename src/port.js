@@ -1,6 +1,10 @@
 /* eslint no-control-regex: "off" */
+/**
+ * @typedef {import('./encoding.js').SerialPortTextDecoder} SerialPortTextDecoder
+ */
 
 import { uint8ArrayConcat, uint8ArraySplitBySeq } from "./uint8array.js";
+import { mkDecoder } from "./encoding.js";
 
 const LINE_SPLIT = "\r\n";
 const LINE_SPLIT_BYTES = new TextEncoder().encode(LINE_SPLIT);
@@ -29,9 +33,10 @@ class Port {
   /**
    *
    * @param {SerialOptions} portOptions
+   * @param {SerialPortTextDecoder} [decoder] Text decoder
    * @param {Partial<PortEventHandlers>} [handlers]
    */
-  constructor(portOptions, handlers = {}) {
+  constructor(portOptions, decoder = mkDecoder("default"), handlers = {}) {
     const { onConnect, onDisconnect, onError, onMessage } = handlers;
     const doNothing = () => {};
     this.portOptions = portOptions;
@@ -39,6 +44,7 @@ class Port {
     this.onDisconnect = onDisconnect || doNothing;
     this.onError = onError || doNothing;
     this.onMessage = onMessage || doNothing;
+    this.decoder = decoder;
   }
 
   /**
@@ -116,7 +122,7 @@ class Port {
           const parts = uint8ArraySplitBySeq(buffer, LINE_SPLIT_BYTES);
           buffer = parts.pop();
           for (const msg of parts) {
-            const text = new TextDecoder().decode(msg);
+            const text = this.decoder.decode(msg);
             this.onMessage(this.handleVT100Codes(text));
           }
         }

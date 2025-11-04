@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   isModalClosed,
   openModal,
@@ -25,10 +25,8 @@ import {
   createMockModal,
   createMockDocument,
   createMockStore,
-  setupTestEnvironment,
   verifyStateUpdates,
 } from "./test-helpers.js";
-import { defaultState } from "./fixtures/state-fixtures.js";
 
 describe("ui.js", () => {
   describe("isModalClosed", () => {
@@ -81,6 +79,7 @@ describe("ui.js", () => {
         dataBits: { value: "8" },
         parity: { value: "none" },
         stopBits: { value: "1" },
+        encoding: { value: "default" },
       };
       const state = loadStateFromDOM(mockEl);
       expect(state).toEqual({
@@ -98,6 +97,7 @@ describe("ui.js", () => {
         isAboutModalOpened: true,
         message: "<p>test message</p>",
         status: "connected",
+        encoding: "default",
       });
     });
   });
@@ -142,6 +142,22 @@ describe("ui.js", () => {
       renderPortSettings(el, state, oldState);
       expect(el.stopBits.value).toBe(1);
     });
+
+    it("updates encoding if changed", () => {
+      const el = { encoding: { value: "utf-8" } };
+      const state = { encoding: "ascii" };
+      const oldState = { encoding: "utf-8" };
+      renderPortSettings(el, state, oldState);
+      expect(el.encoding.value).toBe("ascii");
+    });
+
+    it("does not update encoding if not changed", () => {
+      const el = { encoding: { value: "utf-8" } };
+      const state = { encoding: "utf-8" };
+      const oldState = { encoding: "utf-8" };
+      renderPortSettings(el, state, oldState);
+      expect(el.encoding.value).toBe("utf-8");
+    });
   });
 
   describe("bindPortSettings", () => {
@@ -154,6 +170,7 @@ describe("ui.js", () => {
       dataBits: createMockInput(),
       parity: createMockInput(),
       stopBits: createMockInput(),
+      encoding: createMockInput(),
     });
 
     it("binds settingsBtn click to open settings modal", () => {
@@ -232,6 +249,15 @@ describe("ui.js", () => {
       el.stopBits.value = "2";
       el.stopBits.dispatchEvent(new Event("change"));
       expect(store.setState).toHaveBeenCalledWith({ stopBits: 2 });
+    });
+
+    it("binds encoding change to update state", () => {
+      const store = { setState: vi.fn() };
+      const el = createPortSettingsElements();
+      bindPortSettings(el, store);
+      el.encoding.value = "ascii";
+      el.encoding.dispatchEvent(new Event("change"));
+      expect(store.setState).toHaveBeenCalledWith({ encoding: "ascii" });
     });
   });
 
@@ -736,6 +762,7 @@ describe("ui.js", () => {
         dataBits: { value: "8" },
         parity: { value: "none" },
         stopBits: { value: "1" },
+        encoding: { value: "utf-8" },
       };
       const state = {
         bgColor: "#fff",
@@ -752,6 +779,7 @@ describe("ui.js", () => {
         isAboutModalOpened: false,
         message: "<p>msg</p>",
         status: "connected",
+        encoding: "utf-8",
       };
       await renderState(el, state);
       // Check some changes
@@ -789,6 +817,7 @@ describe("ui.js", () => {
         dataBits: createMockInput(),
         parity: createMockInput(),
         stopBits: createMockInput(),
+        encoding: createMockInput(),
       };
       bindStateToDOM(el, store);
       // Since subscribe is called, and render is subscribed, we can check by setting state and seeing if renderState was called indirectly

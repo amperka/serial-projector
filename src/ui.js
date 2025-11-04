@@ -23,6 +23,7 @@
  * @property {HTMLElement} dataBits - Data bits HTML element
  * @property {HTMLElement} parity - Parity HTML element
  * @property {HTMLElement} stopBits - Stop bits HTML element
+ * @property {HTMLElement} encoding - Encoding HTML element
  */
 
 /**
@@ -66,6 +67,7 @@ export const loadStateFromDOM = (el) => ({
   dataBits: +el.dataBits.value,
   parity: el.parity.value,
   stopBits: +el.stopBits.value,
+  encoding: el.encoding.value,
   isFullscreen: Boolean(el.doc.fullscreenElement),
   isSettingsModalOpened: !isModalClosed(el.settingsModal),
   isStyleModalOpened: !isModalClosed(el.styleModal),
@@ -95,6 +97,10 @@ export const renderPortSettings = (el, state, oldState) => {
 
   if (state.stopBits !== oldState.stopBits) {
     el.stopBits.value = state.stopBits;
+  }
+
+  if (state.encoding !== oldState.encoding) {
+    el.encoding.value = state.encoding;
   }
 };
 
@@ -131,6 +137,9 @@ export const bindPortSettings = (el, store) => {
   );
   el.stopBits.addEventListener("change", (e) =>
     store.setState({ stopBits: +e.target.value }),
+  );
+  el.encoding.addEventListener("change", (e) =>
+    store.setState({ encoding: e.target.value }),
   );
 };
 

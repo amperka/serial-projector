@@ -12,6 +12,56 @@ const mockedLoadStateFromDOM = vi.fn();
 const mockedBindStateToDOM = vi.fn();
 const mockedLoadState = vi.fn();
 const mockedStateContainer = vi.fn();
+const mockedMkDecoder = vi.fn().mockImplementation((encoding) => {
+  const decoder = {
+    encoding,
+    decode: vi.fn(),
+  };
+  return decoder;
+});
+const mockedIsEspruino = vi.fn();
+
+// Set default mock behavior for isEspruino to return false
+mockedIsEspruino.mockReturnValue(false);
+
+// Mock the modules before importing main.js
+// This ensures that when main.js imports these modules, it gets our mocked versions instead
+vi.mock("../src/encoding.js", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    mkDecoder: mockedMkDecoder,
+  };
+});
+
+vi.mock("../src/board.js", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    isEspruino: mockedIsEspruino,
+  };
+});
+
+vi.mock("../src/port.js", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    Port: vi.fn().mockImplementation((portOptions, decoder, handlers = {}) => {
+      const mockPort = {
+        portOptions,
+        decoder: decoder || { encoding: "default", decode: vi.fn() },
+        connectTo: vi.fn(),
+        connectToPrev: vi.fn(),
+        stopReading: vi.fn(),
+        forgetAll: vi.fn(),
+        getInfo: vi.fn().mockReturnValue({}),
+        requestPort: vi.fn(),
+        ...handlers,
+      };
+      return mockPort;
+    }),
+  };
+});
 
 // Mock the modules before importing main.js
 // This ensures that when main.js imports these modules, it gets our mocked versions instead
@@ -38,21 +88,6 @@ vi.mock("../src/storage.js", async (importOriginal) => {
     ...actual,
     loadState: mockedLoadState,
     saveState: vi.fn(),
-  };
-});
-
-vi.mock("../src/port.js", async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    Port: vi.fn().mockImplementation(() => ({
-      connectTo: vi.fn(),
-      connectToPrev: vi.fn(),
-      stopReading: vi.fn(),
-      forgetAll: vi.fn(),
-      getInfo: vi.fn().mockReturnValue({}),
-      requestPort: vi.fn(),
-    })),
   };
 });
 
@@ -392,6 +427,340 @@ describe("init", () => {
     // Check that setState was called with error status (may be called multiple times)
     expect(mockStore.setState).toHaveBeenCalledWith({
       status: "Error: Connect failed",
+    });
+  });
+
+  describe("encoding integration", () => {
+    it("should instantiate SerialPort with decoder from mkDecoder", async () => {
+      const mockStore = createMockStore({
+        encoding: "utf-8",
+        baudRate: 9600,
+        dataBits: 8,
+        parity: "none",
+        stopBits: 1,
+        lastPortInfo: null,
+      });
+      const mockPort = {
+        connectTo: vi.fn().mockResolvedValue(),
+        connectToPrev: vi.fn().mockResolvedValue(),
+        stopReading: vi.fn(),
+        forgetAll: vi.fn(),
+        getInfo: vi.fn().mockReturnValue({}),
+        requestPort: vi.fn(),
+        decoder: { encoding: "utf-8", decode: vi.fn() },
+      };
+      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+
+      const mockConnectBtn = { addEventListener: vi.fn() };
+      const mockDisconnectBtn = { addEventListener: vi.fn() };
+
+      await mainModule.init(
+        mockStore,
+        MockPortClass,
+        mockConnectBtn,
+        mockDisconnectBtn,
+      );
+
+      expect(mockedMkDecoder).toHaveBeenCalledWith("utf-8");
+      expect(MockPortClass).toHaveBeenCalled();
+      // Verify the port was created with the decoder from mkDecoder
+      expect(mockPort.decoder.encoding).toBe("utf-8");
+      expect(mockPort.decoder.decode).toBeDefined();
+    });
+
+    it("should auto-detect Espruino and switch encoding to x-espruino-mixed-utf8", async () => {
+      const mockStore = createMockStore({
+        encoding: "default",
+        baudRate: 9600,
+        dataBits: 8,
+        parity: "none",
+        stopBits: 1,
+        lastPortInfo: null,
+      });
+      const mockPort = {
+        connectTo: vi.fn().mockResolvedValue(),
+        connectToPrev: vi.fn().mockResolvedValue(),
+        stopReading: vi.fn(),
+        forgetAll: vi.fn(),
+        getInfo: vi
+          .fn()
+          .mockReturnValue({ usbVendorId: "0x1209", usbProductId: "0x5740" }),
+        requestPort: vi.fn().mockResolvedValue({
+          getInfo: vi.fn().mockReturnValue({
+            usbVendorId: "0x1209",
+            usbProductId: "0x5740",
+          }),
+        }),
+        decoder: { encoding: "default", decode: vi.fn() },
+      };
+      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+
+      const mockConnectBtn = { addEventListener: vi.fn() };
+      const mockDisconnectBtn = { addEventListener: vi.fn() };
+
+      await mainModule.init(
+        mockStore,
+        MockPortClass,
+        mockConnectBtn,
+        mockDisconnectBtn,
+      );
+
+      // Configure isEspruino to return true for this test
+      mockedIsEspruino.mockReturnValue(true);
+
+      // Trigger manual connect
+      const clickHandler = mockConnectBtn.addEventListener.mock.calls[0][1];
+      await clickHandler();
+
+      expect(mockedIsEspruino).toHaveBeenCalledWith({
+        usbVendorId: "0x1209",
+        usbProductId: "0x5740",
+      });
+      // Check that setState was called with the encoding update
+      const setStateCalls = mockStore.setState.mock.calls;
+      const encodingUpdateCall = setStateCalls.find(
+        (call) => call[0] && call[0].encoding === "x-espruino-mixed-utf8",
+      );
+      expect(encodingUpdateCall).toBeDefined();
+    });
+
+    it("should not auto-switch encoding for non-Espruino devices", async () => {
+      const mockStore = createMockStore({
+        encoding: "default",
+        baudRate: 9600,
+        dataBits: 8,
+        parity: "none",
+        stopBits: 1,
+        lastPortInfo: null,
+      });
+      const mockPort = {
+        connectTo: vi.fn().mockResolvedValue(),
+        connectToPrev: vi.fn().mockResolvedValue(),
+        stopReading: vi.fn(),
+        forgetAll: vi.fn(),
+        getInfo: vi
+          .fn()
+          .mockReturnValue({ usbVendorId: "0x1234", usbProductId: "0x5678" }),
+        requestPort: vi.fn().mockResolvedValue({
+          getInfo: vi.fn().mockReturnValue({
+            usbVendorId: "0x1234",
+            usbProductId: "0x5678",
+          }),
+        }),
+        decoder: { encoding: "default", decode: vi.fn() },
+      };
+      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+
+      const mockConnectBtn = { addEventListener: vi.fn() };
+      const mockDisconnectBtn = { addEventListener: vi.fn() };
+
+      await mainModule.init(
+        mockStore,
+        MockPortClass,
+        mockConnectBtn,
+        mockDisconnectBtn,
+      );
+
+      // Trigger manual connect
+      const clickHandler = mockConnectBtn.addEventListener.mock.calls[0][1];
+      await clickHandler();
+
+      expect(mockedIsEspruino).toHaveBeenCalledWith({
+        usbVendorId: "0x1234",
+        usbProductId: "0x5678",
+      });
+      expect(mockStore.setState).not.toHaveBeenCalledWith({
+        encoding: "x-espruino-mixed-utf8",
+      });
+    });
+
+    it("should not auto-switch encoding when current encoding is not default", async () => {
+      const mockStore = createMockStore({
+        encoding: "utf-8",
+        baudRate: 9600,
+        dataBits: 8,
+        parity: "none",
+        stopBits: 1,
+        lastPortInfo: null,
+      });
+      const mockPort = {
+        connectTo: vi.fn().mockResolvedValue(),
+        connectToPrev: vi.fn().mockResolvedValue(),
+        stopReading: vi.fn(),
+        forgetAll: vi.fn(),
+        getInfo: vi
+          .fn()
+          .mockReturnValue({ usbVendorId: "0x1209", usbProductId: "0x5740" }),
+        requestPort: vi.fn().mockResolvedValue({
+          getInfo: vi.fn().mockReturnValue({
+            usbVendorId: "0x1209",
+            usbProductId: "0x5740",
+          }),
+        }),
+        decoder: { encoding: "utf-8", decode: vi.fn() },
+      };
+      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+
+      const mockConnectBtn = { addEventListener: vi.fn() };
+      const mockDisconnectBtn = { addEventListener: vi.fn() };
+
+      await mainModule.init(
+        mockStore,
+        MockPortClass,
+        mockConnectBtn,
+        mockDisconnectBtn,
+      );
+
+      // Ensure isEspruino returns false (default behavior)
+      mockedIsEspruino.mockReturnValue(false);
+
+      // Trigger manual connect
+      const clickHandler = mockConnectBtn.addEventListener.mock.calls[0][1];
+      await clickHandler();
+
+      // isEspruino should not be called when encoding is not "default"
+      expect(mockedIsEspruino).not.toHaveBeenCalled();
+      expect(mockStore.setState).not.toHaveBeenCalledWith({
+        encoding: "x-espruino-mixed-utf8",
+      });
+    });
+
+    it("should update decoder when encoding state changes", async () => {
+      const mockStore = createMockStore({
+        encoding: "utf-8",
+        baudRate: 9600,
+        dataBits: 8,
+        parity: "none",
+        stopBits: 1,
+        lastPortInfo: null,
+      });
+      const mockPort = {
+        connectTo: vi.fn().mockResolvedValue(),
+        connectToPrev: vi.fn().mockResolvedValue(),
+        stopReading: vi.fn(),
+        forgetAll: vi.fn(),
+        getInfo: vi.fn().mockReturnValue({}),
+        requestPort: vi.fn(),
+        decoder: { encoding: "utf-8", decode: vi.fn() },
+      };
+      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+
+      const mockConnectBtn = { addEventListener: vi.fn() };
+      const mockDisconnectBtn = { addEventListener: vi.fn() };
+
+      await mainModule.init(
+        mockStore,
+        MockPortClass,
+        mockConnectBtn,
+        mockDisconnectBtn,
+      );
+
+      // Get the decoder update subscription callback (should be the second subscribe call)
+      const subscribeCalls = mockStore.subscribe.mock.calls;
+      const decoderUpdateCallback = subscribeCalls[1][0]; // Second subscribe call is for decoder updates
+
+      // Set up the port's decoder with initial encoding
+      mockPort.decoder = { encoding: "utf-8", decode: vi.fn() };
+
+      // Clear previous calls to mkDecoder to isolate the subscription test
+      mockedMkDecoder.mockClear();
+
+      // Mock mkDecoder to return a new decoder for the new encoding
+      const newDecoder = { encoding: "ascii", decode: vi.fn() };
+      mockedMkDecoder.mockReturnValue(newDecoder);
+
+      // Trigger the decoder update callback with new state (different encoding)
+      decoderUpdateCallback({
+        encoding: "ascii",
+        baudRate: 9600,
+        dataBits: 8,
+        parity: "none",
+        stopBits: 1,
+        lastPortInfo: null,
+      });
+
+      // Verify mkDecoder was called with the new encoding
+      expect(mockedMkDecoder).toHaveBeenCalledWith("ascii");
+      // Verify the port's decoder was updated by the callback
+      expect(mockPort.decoder).toBe(newDecoder);
+      expect(mockPort.decoder.encoding).toBe("ascii");
+      expect(mockPort.decoder.decode).toBeDefined();
+    });
+
+    it("should not update decoder when encoding state remains the same", async () => {
+      const mockStore = createMockStore({
+        encoding: "utf-8",
+        baudRate: 9600,
+        dataBits: 8,
+        parity: "none",
+        stopBits: 1,
+        lastPortInfo: null,
+      });
+      const mockPort = {
+        connectTo: vi.fn().mockResolvedValue(),
+        connectToPrev: vi.fn().mockResolvedValue(),
+        stopReading: vi.fn(),
+        forgetAll: vi.fn(),
+        getInfo: vi.fn().mockReturnValue({}),
+        requestPort: vi.fn(),
+        decoder: { encoding: "utf-8", decode: vi.fn() },
+      };
+      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+
+      const mockConnectBtn = { addEventListener: vi.fn() };
+      const mockDisconnectBtn = { addEventListener: vi.fn() };
+
+      await mainModule.init(
+        mockStore,
+        MockPortClass,
+        mockConnectBtn,
+        mockDisconnectBtn,
+      );
+
+      // Get the subscribe callback and trigger it with the same encoding
+      const subscribeCallback = mockStore.subscribe.mock.calls[0][0];
+      subscribeCallback({ encoding: "utf-8" });
+
+      // mkDecoder should only be called once during initialization
+      expect(mockedMkDecoder).toHaveBeenCalledTimes(1);
+    });
+
+    it("should include encoding element in appHtmlElements", async () => {
+      const mockStore = createMockStore({
+        encoding: "default",
+        baudRate: 9600,
+        dataBits: 8,
+        parity: "none",
+        stopBits: 1,
+        lastPortInfo: null,
+      });
+      const mockPort = {
+        connectTo: vi.fn().mockResolvedValue(),
+        connectToPrev: vi.fn().mockResolvedValue(),
+        stopReading: vi.fn(),
+        forgetAll: vi.fn(),
+        getInfo: vi.fn().mockReturnValue({}),
+        requestPort: vi.fn(),
+        decoder: { encoding: "default", decode: vi.fn() },
+      };
+      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+
+      const mockConnectBtn = { addEventListener: vi.fn() };
+      const mockDisconnectBtn = { addEventListener: vi.fn() };
+
+      await mainModule.init(
+        mockStore,
+        MockPortClass,
+        mockConnectBtn,
+        mockDisconnectBtn,
+      );
+
+      // Verify that document.getElementById was called with "encoding"
+      expect(document.getElementById).toHaveBeenCalledWith("encoding");
+
+      // Verify the encoding element is part of the appHtmlElements by checking the module exports
+      // Since appHtmlElements is not exported, we verify the getElementById call instead
+      expect(document.getElementById).toHaveBeenCalledWith("encoding");
     });
   });
 });

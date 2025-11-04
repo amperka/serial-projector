@@ -1,5 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
-import { vi } from "vitest";
+import { expect, vi } from "vitest";
 
 /**
  * Resets all global mocks to ensure test isolation.
@@ -86,6 +85,7 @@ export function setupMockElements() {
     dataBits: { value: 8 },
     parity: { value: "none" },
     stopBits: { value: 1 },
+    encoding: { value: "default" },
   };
   return mockElements;
 }

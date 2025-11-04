@@ -15,6 +15,7 @@ export const defaultState = {
   dataBits: 8,
   parity: "none",
   stopBits: 1,
+  encoding: "default",
   isFullscreen: false,
   isSettingsModalOpened: false,
   isStyleModalOpened: false,
