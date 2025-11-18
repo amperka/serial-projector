@@ -80,6 +80,9 @@ describe("ui.js", () => {
         parity: { value: "none" },
         stopBits: { value: "1" },
         encoding: { value: "default" },
+        dtrSignal: { value: "" },
+        rtsSignal: { value: "true" },
+        breakSignal: { value: "false" },
       };
       const state = loadStateFromDOM(mockEl);
       expect(state).toEqual({
@@ -98,6 +101,9 @@ describe("ui.js", () => {
         message: "<p>test message</p>",
         status: "connected",
         encoding: "default",
+        dtrSignal: null,
+        rtsSignal: true,
+        breakSignal: false,
       });
     });
   });
@@ -171,6 +177,9 @@ describe("ui.js", () => {
       parity: createMockInput(),
       stopBits: createMockInput(),
       encoding: createMockInput(),
+      dtrSignal: createMockInput(),
+      rtsSignal: createMockInput(),
+      breakSignal: createMockInput(),
     });
 
     it("binds settingsBtn click to open settings modal", () => {
@@ -763,6 +772,9 @@ describe("ui.js", () => {
         parity: { value: "none" },
         stopBits: { value: "1" },
         encoding: { value: "utf-8" },
+        dtrSignal: { value: "" },
+        rtsSignal: { value: "" },
+        breakSignal: { value: "" },
       };
       const state = {
         bgColor: "#fff",
@@ -780,6 +792,9 @@ describe("ui.js", () => {
         message: "<p>msg</p>",
         status: "connected",
         encoding: "utf-8",
+        dtrSignal: null,
+        rtsSignal: null,
+        breakSignal: null,
       };
       await renderState(el, state);
       // Check some changes
@@ -818,6 +833,9 @@ describe("ui.js", () => {
         parity: createMockInput(),
         stopBits: createMockInput(),
         encoding: createMockInput(),
+        dtrSignal: createMockInput(),
+        rtsSignal: createMockInput(),
+        breakSignal: createMockInput(),
       };
       bindStateToDOM(el, store);
       // Since subscribe is called, and render is subscribed, we can check by setting state and seeing if renderState was called indirectly

@@ -18,7 +18,7 @@ const PERSIST_STATE_NUM_KEYS = ["fontSize", "baudRate", "dataBits", "stopBits"];
 /** @type {(keyof State)[]} */
 const PERSIST_STATE_OBJ_KEYS = ["lastPortInfo"];
 /** @type {(keyof State)[]} */
-const PERSIST_STATE_BOOL_KEYS = [];
+const PERSIST_STATE_BOOL_KEYS = ["dtrSignal", "rtsSignal", "breakSignal"];
 
 /** @type {(keyof State)[]} */
 const PERSIST_STATE_KEYS = PERSIST_STATE_STR_KEYS.concat(PERSIST_STATE_NUM_KEYS)
@@ -59,7 +59,7 @@ const loadState = () => {
       state[k] = +value;
     }
     if (PERSIST_STATE_BOOL_KEYS.includes(k)) {
-      state[k] = value === "true" ? true : false;
+      state[k] = value === "true" ? true : value === "false" ? false : null;
     }
     if (PERSIST_STATE_OBJ_KEYS.includes(k)) {
       try {

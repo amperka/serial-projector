@@ -9,6 +9,9 @@
  * @property {string} parity - Parity
  * @property {number} stopBits - Stop bits
  * @property {string} encoding - Text encoding
+ * @property {boolean | null} dtrSignal - Send DTR signal
+ * @property {boolean | null} rtsSignal - Send RTS signal
+ * @property {boolean | null} breakSignal - Send break signal
  * @property {boolean} isFullscreen - Fullscreen mode state
  * @property {boolean} isSettingsModalOpened - Settings modal state
  * @property {boolean} isStyleModalOpened - Style modal state

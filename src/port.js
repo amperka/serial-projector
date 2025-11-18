@@ -29,14 +29,22 @@ class Port {
   #keepReading = true;
   /** @type {Promise<void> | null} */
   #portClosePromise = null;
+  /** @type {Record<string, boolean>} */
+  #signals = {};
 
   /**
    *
    * @param {SerialOptions} portOptions
    * @param {SerialPortTextDecoder} [decoder] Text decoder
    * @param {Partial<PortEventHandlers>} [handlers]
+   * @param {Record<string, boolean>} [signals]
    */
-  constructor(portOptions, decoder = mkDecoder("default"), handlers = {}) {
+  constructor(
+    portOptions,
+    decoder = mkDecoder("default"),
+    handlers = {},
+    signals = {},
+  ) {
     const { onConnect, onDisconnect, onError, onMessage } = handlers;
     const doNothing = () => {};
     this.portOptions = portOptions;
@@ -45,6 +53,15 @@ class Port {
     this.onError = onError || doNothing;
     this.onMessage = onMessage || doNothing;
     this.decoder = decoder;
+    this.#signals = signals;
+  }
+
+  /**
+   * Set signals
+   * @param {Record<string, bool>} signals Signals
+   */
+  setSignals(signals) {
+    this.#signals = signals;
   }
 
   /**
@@ -123,6 +140,7 @@ class Port {
           buffer = parts.pop();
           for (const msg of parts) {
             const text = this.decoder.decode(msg);
+            console.log(text);
             this.onMessage(this.handleVT100Codes(text));
           }
         }
@@ -168,7 +186,15 @@ class Port {
     await this.stopReading();
 
     await port.open(this.portOptions);
+    try {
+      if (Object.keys(this.#signals).length > 0) {
+        await port.setSignals(this.#signals);
+      }
+    } catch (e) {
+      this.onError(e);
+    }
     this.onConnect(port);
+
     this.#port = port;
     this.#portClosePromise = this.readUntilClosed();
     await this.#portClosePromise;

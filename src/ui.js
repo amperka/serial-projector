@@ -24,7 +24,40 @@
  * @property {HTMLElement} parity - Parity HTML element
  * @property {HTMLElement} stopBits - Stop bits HTML element
  * @property {HTMLElement} encoding - Encoding HTML element
+ * @property {HTMLElement} dtrSignal - Encoding HTML element
+ * @property {HTMLElement} rtsSignal - Encoding HTML element
+ * @property {HTMLElement} breakSignal - Encoding HTML element
  */
+/** @type {keyof AppHTMLElements} */
+export const appHtmlElementNames = [
+  "doc",
+  "msg",
+  "status",
+  "settingsBtn",
+  "settingsClose",
+  "settingsModal",
+  "styleBtn",
+  "styleClose",
+  "styleModal",
+  "fullscreenBtn",
+  "aboutBtn",
+  "aboutModal",
+  "aboutClose",
+  "connectBtn",
+  "disconnectBtn",
+  "bgColor",
+  "textColor",
+  "fontFamily",
+  "fontSize",
+  "baudRate",
+  "dataBits",
+  "parity",
+  "stopBits",
+  "encoding",
+  "dtrSignal",
+  "rtsSignal",
+  "breakSignal",
+];
 
 /**
  * @typedef {import('./state.js').State} State
@@ -68,6 +101,24 @@ export const loadStateFromDOM = (el) => ({
   parity: el.parity.value,
   stopBits: +el.stopBits.value,
   encoding: el.encoding.value,
+  dtrSignal:
+    el.dtrSignal.value === "true"
+      ? true
+      : el.dtrSignal.value === "false"
+        ? false
+        : null,
+  rtsSignal:
+    el.rtsSignal.value === "true"
+      ? true
+      : el.rtsSignal.value === "false"
+        ? false
+        : null,
+  breakSignal:
+    el.breakSignal.value == "true"
+      ? true
+      : el.breakSignal.value == "false"
+        ? false
+        : null,
   isFullscreen: Boolean(el.doc.fullscreenElement),
   isSettingsModalOpened: !isModalClosed(el.settingsModal),
   isStyleModalOpened: !isModalClosed(el.styleModal),
@@ -101,6 +152,23 @@ export const renderPortSettings = (el, state, oldState) => {
 
   if (state.encoding !== oldState.encoding) {
     el.encoding.value = state.encoding;
+  }
+
+  if (state.dtrSignal !== oldState.dtrSignal) {
+    el.dtrSignal.value =
+      typeof state.dtrSignal === "boolean" ? state.dtrSignal.toString() : "";
+  }
+
+  if (state.rtsSignal !== oldState.rtsSignal) {
+    el.rtsSignal.value =
+      typeof state.rtsSignal === "boolean" ? state.rtsSignal.toString() : "";
+  }
+
+  if (state.breakSignal !== oldState.breakSignal) {
+    el.breakSignal.value =
+      typeof state.breakSignal === "boolean"
+        ? state.breakSignal.toString()
+        : "";
   }
 };
 
@@ -140,6 +208,36 @@ export const bindPortSettings = (el, store) => {
   );
   el.encoding.addEventListener("change", (e) =>
     store.setState({ encoding: e.target.value }),
+  );
+  el.dtrSignal.addEventListener("change", (e) =>
+    store.setState({
+      dtrSignal:
+        e.target.value === "true"
+          ? true
+          : e.target.value === "false"
+            ? false
+            : null,
+    }),
+  );
+  el.rtsSignal.addEventListener("change", (e) =>
+    store.setState({
+      rtsSignal:
+        e.target.value === "true"
+          ? true
+          : e.target.value === "false"
+            ? false
+            : null,
+    }),
+  );
+  el.breakSignal.addEventListener("change", (e) =>
+    store.setState({
+      breakSignal:
+        e.target.value === "true"
+          ? true
+          : e.target.value === "false"
+            ? false
+            : null,
+    }),
   );
 };
 

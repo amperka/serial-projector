@@ -642,6 +642,7 @@ describe("init", () => {
         getInfo: vi.fn().mockReturnValue({}),
         requestPort: vi.fn(),
         decoder: { encoding: "utf-8", decode: vi.fn() },
+        setSignals: vi.fn(),
       };
       const MockPortClass = vi.fn().mockImplementation(() => mockPort);
 
