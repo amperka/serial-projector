@@ -29,6 +29,7 @@ export default defineConfig([
     },
 
     rules: {
+      "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
       semi: "error",
       "prefer-const": "warn",
       "prettier/prettier": "warn",
