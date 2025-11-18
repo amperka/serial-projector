@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import {
+  appHtmlElementNames,
   isModalClosed,
   openModal,
   closeModal,
@@ -85,7 +86,7 @@ describe("ui.js", () => {
         breakSignal: { value: "false" },
       };
       const state = loadStateFromDOM(mockEl);
-      expect(state).toEqual({
+      const expected = {
         bgColor: "#000000",
         textColor: "#ffffff",
         fontFamily: "Arial",
@@ -104,6 +105,34 @@ describe("ui.js", () => {
         dtrSignal: null,
         rtsSignal: true,
         breakSignal: false,
+      };
+      expect(state).toEqual(expected);
+
+      const mockElSignals1 = {
+        ...mockEl,
+        dtrSignal: { value: "true" },
+        rtsSignal: { value: "false" },
+        breakSignal: { value: "" },
+      };
+      const stateSignals1 = loadStateFromDOM(mockElSignals1);
+      expect(stateSignals1).toEqual({
+        ...expected,
+        dtrSignal: true,
+        rtsSignal: false,
+        breakSignal: null,
+      });
+      const mockElSignals2 = {
+        ...mockEl,
+        dtrSignal: { value: "false" },
+        rtsSignal: { value: "" },
+        breakSignal: { value: "true" },
+      };
+      const stateSignals2 = loadStateFromDOM(mockElSignals2);
+      expect(stateSignals2).toEqual({
+        ...expected,
+        dtrSignal: false,
+        rtsSignal: null,
+        breakSignal: true,
       });
     });
   });
@@ -163,6 +192,76 @@ describe("ui.js", () => {
       const oldState = { encoding: "utf-8" };
       renderPortSettings(el, state, oldState);
       expect(el.encoding.value).toBe("utf-8");
+    });
+
+    it("updates dtrSignal if changed", () => {
+      const el = { dtrSignal: { value: "false" } };
+      const state = { dtrSignal: true };
+      const oldState = { dtrSignal: false };
+      renderPortSettings(el, state, oldState);
+      expect(el.dtrSignal.value).toBe("true");
+    });
+
+    it("does not update dtrSignal if not changed", () => {
+      const el = { dtrSignal: { value: "true" } };
+      const state = { dtrSignal: true };
+      const oldState = { dtrSignal: true };
+      renderPortSettings(el, state, oldState);
+      expect(el.dtrSignal.value).toBe("true");
+    });
+
+    it("updates rtsSignal if changed", () => {
+      const el = { rtsSignal: { value: "true" } };
+      const state = { rtsSignal: false };
+      const oldState = { rtsSignal: true };
+      renderPortSettings(el, state, oldState);
+      expect(el.rtsSignal.value).toBe("false");
+    });
+
+    it("does not update dtrSignal if not changed", () => {
+      const el = { dtrSignal: { value: "true" } };
+      const state = { dtrSignal: true };
+      const oldState = { dtrSignal: true };
+      renderPortSettings(el, state, oldState);
+      expect(el.dtrSignal.value).toBe("true");
+    });
+
+    it("updates breakSignal if changed", () => {
+      const el = { breakSignal: { value: "" } };
+      const state = { breakSignal: true };
+      const oldState = { breakSignal: null };
+      renderPortSettings(el, state, oldState);
+      expect(el.breakSignal.value).toBe("true");
+    });
+
+    it("does not update breakSignal if not changed", () => {
+      const el = { breakSignal: { value: "true" } };
+      const state = { breakSignal: true };
+      const oldState = { breakSignal: true };
+      renderPortSettings(el, state, oldState);
+      expect(el.breakSignal.value).toBe("true");
+    });
+
+    it("sets signal value to empty string when signal is null", () => {
+      const el = {
+        dtrSignal: { value: "true" },
+        rtsSignal: { value: "false" },
+        breakSignal: { value: "true" },
+      };
+      const state = {
+        dtrSignal: null,
+        rtsSignal: null,
+        breakSignal: null,
+      };
+      const oldState = {
+        dtrSignal: true,
+        rtsSignal: false,
+        breakSignal: true,
+      };
+      renderPortSettings(el, state, oldState);
+      expect(el.dtrSignal.value).toBe("");
+      expect(el.rtsSignal.value).toBe("");
+      expect(el.breakSignal.value).toBe("");
     });
   });
 
@@ -267,6 +366,60 @@ describe("ui.js", () => {
       el.encoding.value = "ascii";
       el.encoding.dispatchEvent(new Event("change"));
       expect(store.setState).toHaveBeenCalledWith({ encoding: "ascii" });
+    });
+
+    it("binds dtrSignal change to update state", () => {
+      const store = { setState: vi.fn() };
+      const el = createPortSettingsElements();
+      bindPortSettings(el, store);
+
+      el.dtrSignal.value = "true";
+      el.dtrSignal.dispatchEvent(new Event("change"));
+      expect(store.setState).toHaveBeenCalledWith({ dtrSignal: true });
+
+      el.dtrSignal.value = "false";
+      el.dtrSignal.dispatchEvent(new Event("change"));
+      expect(store.setState).toHaveBeenCalledWith({ dtrSignal: false });
+
+      el.dtrSignal.value = "";
+      el.dtrSignal.dispatchEvent(new Event("change"));
+      expect(store.setState).toHaveBeenCalledWith({ dtrSignal: null });
+    });
+
+    it("binds rtsSignal change to update state", () => {
+      const store = { setState: vi.fn() };
+      const el = createPortSettingsElements();
+      bindPortSettings(el, store);
+
+      el.rtsSignal.value = "true";
+      el.rtsSignal.dispatchEvent(new Event("change"));
+      expect(store.setState).toHaveBeenCalledWith({ rtsSignal: true });
+
+      el.rtsSignal.value = "false";
+      el.rtsSignal.dispatchEvent(new Event("change"));
+      expect(store.setState).toHaveBeenCalledWith({ rtsSignal: false });
+
+      el.rtsSignal.value = "";
+      el.rtsSignal.dispatchEvent(new Event("change"));
+      expect(store.setState).toHaveBeenCalledWith({ rtsSignal: null });
+    });
+
+    it("binds breakSignal change to update state", () => {
+      const store = { setState: vi.fn() };
+      const el = createPortSettingsElements();
+      bindPortSettings(el, store);
+
+      el.breakSignal.value = "true";
+      el.breakSignal.dispatchEvent(new Event("change"));
+      expect(store.setState).toHaveBeenCalledWith({ breakSignal: true });
+
+      el.breakSignal.value = "false";
+      el.breakSignal.dispatchEvent(new Event("change"));
+      expect(store.setState).toHaveBeenCalledWith({ breakSignal: false });
+
+      el.breakSignal.value = "";
+      el.breakSignal.dispatchEvent(new Event("change"));
+      expect(store.setState).toHaveBeenCalledWith({ breakSignal: null });
     });
   });
 
@@ -802,6 +955,39 @@ describe("ui.js", () => {
       expect(el.bgColor.value).toBe("#fff");
       expect(el.baudRate.value).toBe(115200);
       expect(el.msg.innerHTML).toBe("<p>msg</p>");
+    });
+
+    describe("appHtmlElementNames", () => {
+      it("should export array of HTML element names", () => {
+        expect(Array.isArray(appHtmlElementNames)).toBe(true);
+        expect(appHtmlElementNames).toContain("doc");
+        expect(appHtmlElementNames).toContain("msg");
+        expect(appHtmlElementNames).toContain("status");
+        expect(appHtmlElementNames).toContain("settingsBtn");
+        expect(appHtmlElementNames).toContain("settingsClose");
+        expect(appHtmlElementNames).toContain("settingsModal");
+        expect(appHtmlElementNames).toContain("styleBtn");
+        expect(appHtmlElementNames).toContain("styleClose");
+        expect(appHtmlElementNames).toContain("styleModal");
+        expect(appHtmlElementNames).toContain("fullscreenBtn");
+        expect(appHtmlElementNames).toContain("aboutBtn");
+        expect(appHtmlElementNames).toContain("aboutModal");
+        expect(appHtmlElementNames).toContain("aboutClose");
+        expect(appHtmlElementNames).toContain("connectBtn");
+        expect(appHtmlElementNames).toContain("disconnectBtn");
+        expect(appHtmlElementNames).toContain("bgColor");
+        expect(appHtmlElementNames).toContain("textColor");
+        expect(appHtmlElementNames).toContain("fontFamily");
+        expect(appHtmlElementNames).toContain("fontSize");
+        expect(appHtmlElementNames).toContain("baudRate");
+        expect(appHtmlElementNames).toContain("dataBits");
+        expect(appHtmlElementNames).toContain("parity");
+        expect(appHtmlElementNames).toContain("stopBits");
+        expect(appHtmlElementNames).toContain("encoding");
+        expect(appHtmlElementNames).toContain("dtrSignal");
+        expect(appHtmlElementNames).toContain("rtsSignal");
+        expect(appHtmlElementNames).toContain("breakSignal");
+      });
     });
   });
 

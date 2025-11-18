@@ -208,6 +208,44 @@ describe("main.js", () => {
     });
   });
 
+  describe("getPortSignalOptsFromState", () => {
+    it("should extract port signal options from state with boolean values", () => {
+      const state = {
+        dtrSignal: true,
+        rtsSignal: false,
+        breakSignal: true,
+      };
+      const signals = mainModule.getPortSignalOptsFromState(state);
+      expect(signals).toEqual({
+        dataTerminalReady: true,
+        requestToSend: false,
+        break: true,
+      });
+    });
+
+    it("should filter out null signal values", () => {
+      const state = {
+        dtrSignal: null,
+        rtsSignal: false,
+        breakSignal: null,
+      };
+      const signals = mainModule.getPortSignalOptsFromState(state);
+      expect(signals).toEqual({
+        requestToSend: false,
+      });
+    });
+
+    it("should return empty object when all signals are null", () => {
+      const state = {
+        dtrSignal: null,
+        rtsSignal: null,
+        breakSignal: null,
+      };
+      const signals = mainModule.getPortSignalOptsFromState(state);
+      expect(signals).toEqual({});
+    });
+  });
+
   describe("getStore", () => {
     it("should create a StateContainer with state loaded from DOM", () => {
       const mockElements = setupTestEnvironment().mockElements;

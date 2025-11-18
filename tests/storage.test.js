@@ -56,6 +56,27 @@ describe("storage.js", () => {
       );
     });
 
+    it("should save boolean keys to localStorage", () => {
+      const state = {
+        dtrSignal: true,
+        rtsSignal: false,
+        breakSignal: null,
+      };
+      saveState(state);
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "state_dtrSignal",
+        true,
+      );
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "state_rtsSignal",
+        false,
+      );
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "state_breakSignal",
+        null,
+      );
+    });
+
     it("should ignore non-persisted keys", () => {
       const state = {
         bgColor: "#ffffff",
@@ -134,6 +155,37 @@ describe("storage.js", () => {
       const result = loadState();
       expect(result).toEqual({
         bgColor: "#ffffff",
+      });
+    });
+
+    it("should handle three-state boolean values from localStorage", () => {
+      localStorage.getItem.mockImplementation((key) => {
+        if (key === "state_dtrSignal") return "true";
+        if (key === "state_rtsSignal") return "false";
+        if (key === "state_breakSignal") return "";
+        return null;
+      });
+      const result = loadState();
+      expect(result).toEqual({
+        dtrSignal: true,
+        rtsSignal: false,
+        breakSignal: null,
+      });
+    });
+
+    it("should parse boolean values with three-state logic", () => {
+      localStorage.getItem.mockImplementation((key) => {
+        if (key === "state_dtrSignal") return "true";
+        if (key === "state_rtsSignal") return "false";
+        if (key === "state_breakSignal") return "invalid";
+        if (key === "state_otherSignal") return null;
+        return null;
+      });
+      const result = loadState();
+      expect(result).toEqual({
+        dtrSignal: true,
+        rtsSignal: false,
+        breakSignal: null,
       });
     });
 
