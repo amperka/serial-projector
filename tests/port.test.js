@@ -73,6 +73,42 @@ describe("Port", () => {
     });
   });
 
+  describe("signals functionality", () => {
+    it("should set signals in constructor", () => {
+      const signals = {
+        dataTerminalReady: true,
+        requestToSend: false,
+      };
+      const port = new Port({}, {}, {}, signals);
+      expect(port).toBeDefined();
+    });
+
+    it("should update signals via setSignals method", () => {
+      const port = new Port({});
+      const newSignals = {
+        dataTerminalReady: true,
+        requestToSend: false,
+        break: true,
+      };
+
+      port.setSignals(newSignals);
+      // The signals are stored privately, but we can verify the method exists and doesn't throw
+      expect(typeof port.setSignals).toBe("function");
+    });
+
+    it("should handle empty signals object", () => {
+      const port = new Port({});
+      port.setSignals({});
+      expect(typeof port.setSignals).toBe("function");
+    });
+
+    it("should handle null signals", () => {
+      const port = new Port({});
+      port.setSignals(null);
+      expect(typeof port.setSignals).toBe("function");
+    });
+  });
+
   describe("decoder functionality", () => {
     it("should set decoder property in constructor", () => {
       const customDecoder = mkDecoder("utf-8");

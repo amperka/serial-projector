@@ -1,6 +1,6 @@
 import { StateContainer } from "./state.js";
 import { loadState, saveState } from "./storage.js";
-import { loadStateFromDOM, bindStateToDOM } from "./ui.js";
+import { appHtmlElementNames, loadStateFromDOM, bindStateToDOM } from "./ui.js";
 import { Port } from "./port.js";
 import { mkDecoder } from "./encoding.js";
 import { isEspruino } from "./board.js";
@@ -10,32 +10,12 @@ import { isEspruino } from "./board.js";
  */
 
 /** @type {AppHTMLElements} */
-const appHtmlElements = {
-  doc: document,
-  msg: document.getElementById("message"),
-  status: document.getElementById("status"),
-  settingsBtn: document.getElementById("settingsBtn"),
-  settingsClose: document.getElementById("closeSettings"),
-  settingsModal: document.getElementById("settingsModal"),
-  styleBtn: document.getElementById("styleBtn"),
-  styleClose: document.getElementById("closeStyle"),
-  styleModal: document.getElementById("styleModal"),
-  fullscreenBtn: document.getElementById("fullscreenBtn"),
-  aboutBtn: document.getElementById("aboutBtn"),
-  aboutModal: document.getElementById("aboutModal"),
-  aboutClose: document.getElementById("closeAbout"),
-  connectBtn: document.getElementById("connectBtn"),
-  disconnectBtn: document.getElementById("disconnectBtn"),
-  bgColor: document.getElementById("bgColor"),
-  textColor: document.getElementById("textColor"),
-  fontFamily: document.getElementById("fontFamily"),
-  fontSize: document.getElementById("fontSize"),
-  baudRate: document.getElementById("baudRate"),
-  dataBits: document.getElementById("dataBits"),
-  parity: document.getElementById("parity"),
-  stopBits: document.getElementById("stopBits"),
-  encoding: document.getElementById("encoding"),
-};
+const appHtmlElements = Object.fromEntries(
+  appHtmlElementNames.map((k) => {
+    if (k == "doc") return [k, document];
+    return [k, document.getElementById(k)];
+  }),
+);
 
 /**
  * Debounce decorator
@@ -87,6 +67,22 @@ export const getPortOptsFromState = (state) => ({
   parity: state.parity,
   stopBits: state.stopBits,
 });
+
+/**
+ * State to port signal options
+ * @param {State} state
+ * @returns {Record<string, boolean>}
+ */
+export const getPortSignalOptsFromState = (state) => {
+  const opts = {
+    dataTerminalReady: state.dtrSignal,
+    requestToSend: state.rtsSignal,
+    break: state.breakSignal,
+  };
+  return Object.fromEntries(
+    Object.entries(opts).filter(([_, v]) => typeof v === "boolean"),
+  );
+};
 
 /**
  * Get StateContainer
@@ -144,6 +140,7 @@ export async function init(
     getPortOptsFromState(store.getState()),
     mkDecoder(store.getState().encoding),
     makePortHandlers(store),
+    getPortSignalOptsFromState(store.getState()),
   );
   console.debug(port); // can use port directly for debugging
 
@@ -157,11 +154,13 @@ export async function init(
     store.setState({ lastPortInfo: {} });
   });
 
-  // update decoder
   store.subscribe((state) => {
+    // update decoder
     if (port.decoder.encoding !== state.encoding) {
       port.decoder = mkDecoder(state.encoding);
     }
+    // update signal options
+    port.setSignals(getPortSignalOptsFromState(state));
   });
 
   const connectToPrevPort = async () =>

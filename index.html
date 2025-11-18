@@ -20,7 +20,7 @@
   </head>
   <body>
     <main>
-      <div id="message">🔌</div>
+      <div id="msg">🔌</div>
     </main>
 
     <div id="status">Disconnected</div>
@@ -38,7 +38,10 @@
         <h2>Connection Settings</h2>
         <label
           >Baud rate:
-          <select id="baudRate">
+          <select
+            id="baudRate"
+            title="A positive, non-zero value indicating the baud rate at which serial communication should be established."
+          >
             <option>9600</option>
             <option>19200</option>
             <option>38400</option>
@@ -48,14 +51,20 @@
         </label>
         <label
           >Data bits:
-          <select id="dataBits">
+          <select
+            id="dataBits"
+            title="An integer value of 7 or 8 indicating the number of data bits per frame. If not passed, defaults to 8."
+          >
             <option value="7">7</option>
             <option value="8" selected>8</option>
           </select>
         </label>
         <label
           >Parity:
-          <select id="parity">
+          <select
+            id="parity"
+            title='The parity mode, either "none", "even", or "odd". The default value is "none".'
+          >
             <option value="none" selected>None</option>
             <option value="odd">Odd</option>
             <option value="even">Even</option>
@@ -63,14 +72,20 @@
         </label>
         <label
           >Stop bits:
-          <select id="stopBits">
+          <select
+            id="stopBits"
+            title="An integer value of 1 or 2 indicating the number of stop bits at the end of the frame."
+          >
             <option value="1" selected>1</option>
             <option value="2">2</option>
           </select>
         </label>
         <label
           >Encoding:
-          <select id="encoding">
+          <select
+            id="encoding"
+            title="From which encoding to recode if it is not UTF-8."
+          >
             <option value="default" selected>Default (UTF-8)</option>
             <option value="utf-8">UTF-8</option>
             <option value="x-espruino-mixed-utf8">
@@ -115,6 +130,44 @@
             <option value="euc-kr">EUC-KR</option>
           </select>
         </label>
+
+        <h3>Signals</h3>
+        <div class="modal-content-inline">
+          <label
+            ><abbr title="Data Terminal Ready">DTR</abbr>:
+            <select
+              id="dtrSignal"
+              title='A boolean indicating whether to invoke the operating system to either assert (if true) or de-assert (if false) the "data terminal ready" or "DTR" signal on the serial port.'
+            >
+              <option value="" selected>Default</option>
+              <option value="true" selected>Yes</option>
+              <option value="false">No</option>
+            </select>
+          </label>
+          <label
+            ><abbr title="Request to Send">RTS</abbr>:
+            <select
+              id="rtsSignal"
+              title='A boolean indicating whether to invoke the operating system to either assert (if true) or de-assert (if false) the "request to send" or "RTS" signal on the serial port.'
+            >
+              <option value="" selected>Default</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </label>
+          <label
+            ><code>break</code>:
+            <select
+              id="breakSignal"
+              title='A boolean indicating whether to invoke the operating system to either assert (if true) or de-assert (if false) the "break" signal on the serial port.'
+            >
+              <option value="" selected>Default</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </label>
+        </div>
+
         <button id="connectBtn" title="Connect and turn autoconnection on">
           Connect
         </button>
@@ -124,7 +177,7 @@
         >
           Disconnect
         </button>
-        <button id="closeSettings">Close</button>
+        <button id="settingsClose">Close</button>
       </div>
     </div>
 
@@ -157,7 +210,7 @@
             value="10"
           />
         </label>
-        <button id="closeStyle">Close</button>
+        <button id="styleClose">Close</button>
       </div>
     </div>
 
@@ -177,7 +230,7 @@
           >
           is available on GitHub.
         </p>
-        <button id="closeAbout">Close</button>
+        <button id="aboutClose">Close</button>
       </div>
     </div>
 

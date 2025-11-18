@@ -76,3 +76,11 @@ video {
   display: block;
   margin-bottom: 10px;
 }
+
+.modal-content-inline {
+  display: flex;
+}
+
+.modal-content-inline label {
+  padding: 5px;
+}
