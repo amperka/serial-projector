@@ -1,6 +1,7 @@
 name: Deploy
 permissions:
   contents: read
+  id-token: write # OIDC token for workload identity federation
 
 on:
   push:
@@ -10,12 +11,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      RCLONE_CONFIG_STORAGE_TYPE: s3
-      RCLONE_CONFIG_STORAGE_PROVIDER: Other
-      RCLONE_CONFIG_STORAGE_ACL: public-read
-      RCLONE_CONFIG_STORAGE_ENDPOINT: "${{ secrets.RCLONE_CONFIG_STORAGE_ENDPOINT }}"
-      RCLONE_CONFIG_STORAGE_ACCESS_KEY_ID: "${{ secrets.RCLONE_CONFIG_STORAGE_ACCESS_KEY_ID }}"
-      RCLONE_CONFIG_STORAGE_SECRET_ACCESS_KEY: "${{ secrets.RCLONE_CONFIG_STORAGE_SECRET_ACCESS_KEY }}"
+      GCS_BUCKET: gs://amperka-projector
 
     steps:
       - uses: actions/checkout@v5
@@ -25,6 +21,27 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: npm run test
-      - run: |
-          curl https://rclone.org/install.sh | sudo bash
-          rclone sync dist/ storage:projector.amperka.ru/ --verbose
+
+      # Trades the GitHub OIDC token for a short-lived Google Cloud credential
+      # and exports it for gcloud. The service account (gh-serial-projector) is
+      # bound to this repository id only and holds storage.objectAdmin on the
+      # bucket; see amperka-infra terraform/prod/gcp/wif.tf.
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: "${{ secrets.GCP_WIF_PROVIDER }}"
+          service_account: "${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}"
+
+      - name: Publish to Google Cloud Storage
+        run: |
+          # `gcloud storage`, not gsutil: gsutil ignores the credentials the
+          # auth step exports.
+          # `rsync` mirrors dist/ into the bucket root and deletes the objects
+          # the build no longer produces, which is what the previous
+          # `rclone sync` did.
+          gcloud storage rsync dist "${GCS_BUCKET}" \
+            --recursive --delete-unmatched-destination-objects
+          # Content type is guessed from the file extension through the
+          # runner's MIME database, which is not guaranteed to know
+          # .webmanifest; the PWA manifest needs its type.
+          gcloud storage objects update "${GCS_BUCKET}/manifest.webmanifest" \
+            --content-type=application/manifest+json
