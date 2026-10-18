@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     env:
       RCLONE_CONFIG_STORAGE_TYPE: s3
       RCLONE_CONFIG_STORAGE_PROVIDER: Other
