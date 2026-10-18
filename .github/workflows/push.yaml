@@ -1,9 +1,10 @@
 # Build the production image on every pull request and publish it to the Google
 # Artifact Registry on every push to `master`.
 #
-# Unit tests, lint and formatting are not repeated here: pull requests go
-# through pr.yaml, which runs the whole check suite. This workflow proves that
-# the image itself builds, and publishes it.
+# Unit tests run here on every push to `master`: pr.yaml is pull-request-only,
+# so this is the last gate before a regression reaches the registry. On a pull
+# request pr.yaml already covers format, lint and tests, and this workflow only
+# proves that the image builds.
 #
 # Credentials are resolved only where they are used, on the publishing path.
 # GitHub never passes repository secrets to a `pull_request` run, and a pull
@@ -70,6 +71,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+
+      # A push to `master` never goes through pr.yaml, and no other workflow on
+      # a push runs the suite: without this step a regression could be
+      # published to the registry untested. Pull requests do get the full
+      # format, lint and test suite from pr.yaml, so the step is skipped there.
+      - name: Run unit tests
+        if: ${{ env.PUBLISH == 'true' }}
+        run: |
+          npm ci --no-audit --no-fund
+          npm run test
 
       - name: Authenticate to Google Cloud (workload identity)
         id: auth_wif
