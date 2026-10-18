@@ -5,6 +5,13 @@
 # through pr.yaml, which runs the whole check suite. This workflow proves that
 # the image itself builds, and publishes it.
 #
+# Credentials are resolved only where they are used, on the publishing path.
+# GitHub never passes repository secrets to a `pull_request` run, and a pull
+# request from a fork never gets them at all, so a job that demanded a
+# credential on every event would fail every such pull request. On a pull
+# request this job only proves the image builds; a broken credential setup
+# fails the push to `master` instead.
+#
 # Published tags, both pointing at the same image:
 #   latest                 rolling, the one the host follows
 #   <YYYYMMDDHHMMSS>       build time in UTC, unique per push to `master`, so one
@@ -64,12 +71,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      # The credential is resolved before the build, and therefore on pull
-      # requests as well: a broken WIF setup then fails the pull request instead
-      # of the push to `master` that was supposed to deploy it.
       - name: Authenticate to Google Cloud (workload identity)
         id: auth_wif
-        if: ${{ env.HAS_GCP_WIF == 'true' }}
+        if: ${{ env.PUBLISH == 'true' && env.HAS_GCP_WIF == 'true' }}
         uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
@@ -82,7 +86,7 @@ jobs:
 
       - name: Authenticate to Google Cloud (service-account key)
         id: auth_key
-        if: ${{ steps.auth_wif.outcome == 'skipped' && env.HAS_GCP_SA_KEY == 'true' }}
+        if: ${{ env.PUBLISH == 'true' && steps.auth_wif.outcome == 'skipped' && env.HAS_GCP_SA_KEY == 'true' }}
         uses: google-github-actions/auth@v3
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
@@ -90,12 +94,13 @@ jobs:
           create_credentials_file: false
 
       - name: Require GCP credentials
-        if: ${{ steps.auth_wif.outcome == 'skipped' && steps.auth_key.outcome == 'skipped' }}
+        if: ${{ env.PUBLISH == 'true' && steps.auth_wif.outcome == 'skipped' && steps.auth_key.outcome == 'skipped' }}
         run: |
           echo "::error title=Missing GCP credentials::Set GCP_WIF_PROVIDER + GCP_WIF_SERVICE_ACCOUNT (preferred) or GCP_SA_KEY repository secrets."
           exit 1
 
       - name: Login to Artifact Registry
+        if: ${{ env.PUBLISH == 'true' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY_HOST }}
