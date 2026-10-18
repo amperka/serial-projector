@@ -20,6 +20,12 @@ an angie image, so the build context needs nothing but the repository itself.
 The container listens on 8080, not 80: an unprivileged port needs no extra setup
 under rootless podman, and the outer port is mapped to whatever the host wants.
 
+## Publishing
+
+`.github/workflows/push.yaml` builds this image on every pull request and
+publishes it to the Google Artifact Registry on every push to `master`, as
+`serial-projector`, tagged both `latest` and with the build time in UTC.
+
 ## Caching
 
 The build is the only thing that knows the file names, so the rules follow it:
