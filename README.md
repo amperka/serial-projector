@@ -57,8 +57,7 @@ including its SARIF formatter.
 Keep `vitest` and `@vitest/coverage-v8` on the same version when updating them.
 Dependabot checks the pinned container base images for updates monthly.
 Dependabot groups Vite with its plugins and ESLint with its configuration and
-plugins so their peer dependencies can be updated together. ESLint 10 is deferred
-until `eslint-plugin-import` supports it; do not bypass peer dependency checks.
+plugins so their peer dependencies can be updated together.
 
 ## Authors and License
 

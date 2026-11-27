@@ -70,7 +70,6 @@ package.json (dev only)
 - Update `vitest` and `@vitest/coverage-v8` together; their versions must match.
 - Update Vite with its plugins and ESLint with its configuration and plugins; respect their peer dependencies.
 - The ESLint security scan must use Node.js 26 and `npm ci`, including the locked SARIF formatter.
-- Keep ESLint on version 9 until `eslint-plugin-import` supports version 10; do not use `--force` or `--legacy-peer-deps`.
 
 ---
 
