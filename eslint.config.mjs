@@ -1,5 +1,5 @@
-import { defineConfig, globalIgnores } from "eslint/config"; // eslint-disable-line import/no-unresolved
-import importPlugin from "eslint-plugin-import";
+import { defineConfig, globalIgnores } from "eslint/config"; // eslint-disable-line import-x/no-unresolved
+import { importX } from "eslint-plugin-import-x";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import globals from "globals";
 import js from "@eslint/js";
@@ -7,7 +7,7 @@ import js from "@eslint/js";
 export default defineConfig([
   globalIgnores(["coverage/*", "node_modules/*"]),
   js.configs.recommended,
-  importPlugin.flatConfigs.recommended,
+  importX.flatConfigs.recommended,
   eslintPluginPrettierRecommended,
   {
     languageOptions: {
@@ -19,7 +19,7 @@ export default defineConfig([
     },
 
     settings: {
-      "import/resolver": {
+      "import-x/resolver": {
         node: {
           extensions: [".js"],
           path: ["src"],
@@ -33,13 +33,13 @@ export default defineConfig([
       semi: "error",
       "prefer-const": "warn",
       "prettier/prettier": "warn",
-      "import/no-extraneous-dependencies": [
+      "import-x/no-extraneous-dependencies": [
         "error",
         {
           devDependencies: true,
         },
       ],
-      "import/unambiguous": "off",
+      "import-x/unambiguous": "off",
     },
   },
 ]);
