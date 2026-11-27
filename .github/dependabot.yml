@@ -13,3 +13,13 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    groups:
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+      vitest-security:
+        applies-to: security-updates
+        patterns:
+          - "vitest"
+          - "@vitest/*"
