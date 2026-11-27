@@ -80,7 +80,7 @@ jobs:
         if: ${{ env.PUBLISH == 'true' }}
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: 26
 
       - name: Run unit tests
         if: ${{ env.PUBLISH == 'true' }}

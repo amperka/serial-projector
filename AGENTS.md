@@ -65,9 +65,12 @@ package.json (dev only)
   - Prettier format check
   - Vitest unit tests with coverage
 - CI must fail if linting, formatting, or tests fail.
-- Use Node.js 24 and `npm ci` to reproduce the CI dependency tree.
+- Use Node.js 26 and `npm ci` to reproduce the CI dependency tree.
 - Pin container base images to exact version tags in `FROM` so Dependabot can update them.
 - Update `vitest` and `@vitest/coverage-v8` together; their versions must match.
+- Update Vite with its plugins and ESLint with its configuration and plugins; respect their peer dependencies.
+- The ESLint security scan must use Node.js 26 and `npm ci`, including the locked SARIF formatter.
+- Keep ESLint on version 9 until `eslint-plugin-import` supports version 10; do not use `--force` or `--legacy-peer-deps`.
 
 ---
 

@@ -18,6 +18,17 @@ updates:
     schedule:
       interval: "monthly"
     groups:
+      vite:
+        patterns:
+          - "vite"
+          - "@vitejs/*"
+          - "vite-plugin-*"
+      eslint:
+        patterns:
+          - "eslint"
+          - "@eslint/js"
+          - "eslint-plugin-*"
+          - "eslint-config-*"
       vitest:
         patterns:
           - "vitest"
