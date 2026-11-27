@@ -76,6 +76,12 @@ jobs:
       # a push runs the suite: without this step a regression could be
       # published to the registry untested. Pull requests do get the full
       # format, lint and test suite from pr.yaml, so the step is skipped there.
+      - name: Set up Node.js
+        if: ${{ env.PUBLISH == 'true' }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
       - name: Run unit tests
         if: ${{ env.PUBLISH == 'true' }}
         run: |

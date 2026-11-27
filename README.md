@@ -37,6 +37,22 @@ void loop()
 
 Use buttons at the bottom right corner to adjust application settings.
 
+## Development
+
+Use Node.js 24 LTS. Install the locked dependencies and run the CI checks:
+
+```bash
+npm ci --no-audit --no-fund
+npm run format
+npm run lint
+npm run build
+npm run test -- --run
+```
+
+Pull requests run these checks and build the production container. Pushes to
+`master` run unit tests on Node.js 24 before building and publishing the image.
+Keep `vitest` and `@vitest/coverage-v8` on the same version when updating them.
+
 ## Authors and License
 
 Written by Victor Nakoryakov, Sergei Korolev © Amperka LLC.

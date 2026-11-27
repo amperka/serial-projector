@@ -46,7 +46,11 @@ vi.mock("../src/port.js", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
-    Port: vi.fn().mockImplementation((portOptions, decoder, handlers = {}) => {
+    Port: vi.fn().mockImplementation(function (
+      portOptions,
+      decoder,
+      handlers = {},
+    ) {
       const mockPort = {
         portOptions,
         decoder: decoder || { encoding: "default", decode: vi.fn() },
@@ -104,14 +108,17 @@ beforeEach(async () => {
   // Using fixtures ensures consistent test data across all tests
   mockedLoadStateFromDOM.mockReturnValue(defaultState);
   mockedLoadState.mockReturnValue({});
+  mockedIsEspruino.mockReturnValue(false);
 
   // Mock StateContainer constructor to return a mock store instance
   // The mock store includes all the methods that main.js expects to call
-  mockedStateContainer.mockImplementation(() => ({
-    setState: vi.fn().mockReturnThis(),
-    getState: vi.fn().mockReturnValue(defaultState),
-    subscribe: vi.fn(),
-  }));
+  mockedStateContainer.mockImplementation(function () {
+    return {
+      setState: vi.fn().mockReturnThis(),
+      getState: vi.fn().mockReturnValue(defaultState),
+      subscribe: vi.fn(),
+    };
+  });
 
   // Set up complete test environment with all common mocks
   // This includes DOM elements, navigator.serial, localStorage, and console
@@ -270,7 +277,9 @@ describe("main.js", () => {
         getInfo: vi.fn().mockReturnValue({}),
         requestPort: vi.fn(),
       };
-      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+      const MockPortClass = vi.fn().mockImplementation(function () {
+        return mockPort;
+      });
 
       const mockConnectBtn = { addEventListener: vi.fn() };
       const mockDisconnectBtn = { addEventListener: vi.fn() };
@@ -317,7 +326,9 @@ describe("main.js", () => {
         getInfo: vi.fn().mockReturnValue({}),
         requestPort: vi.fn().mockResolvedValue({}),
       };
-      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+      const MockPortClass = vi.fn().mockImplementation(function () {
+        return mockPort;
+      });
 
       const mockConnectBtn = { addEventListener: vi.fn() };
       const mockDisconnectBtn = { addEventListener: vi.fn() };
@@ -399,7 +410,9 @@ describe("init", () => {
       getInfo: vi.fn().mockReturnValue({}),
       requestPort: vi.fn(),
     };
-    const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+    const MockPortClass = vi.fn().mockImplementation(function () {
+      return mockPort;
+    });
 
     const mockConnectBtn = { addEventListener: vi.fn() };
     const mockDisconnectBtn = { addEventListener: vi.fn() };
@@ -446,7 +459,9 @@ describe("init", () => {
       getInfo: vi.fn().mockReturnValue({}),
       requestPort: vi.fn().mockResolvedValue({}),
     };
-    const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+    const MockPortClass = vi.fn().mockImplementation(function () {
+      return mockPort;
+    });
 
     const mockConnectBtn = { addEventListener: vi.fn() };
     const mockDisconnectBtn = { addEventListener: vi.fn() };
@@ -487,7 +502,9 @@ describe("init", () => {
         requestPort: vi.fn(),
         decoder: { encoding: "utf-8", decode: vi.fn() },
       };
-      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+      const MockPortClass = vi.fn().mockImplementation(function () {
+        return mockPort;
+      });
 
       const mockConnectBtn = { addEventListener: vi.fn() };
       const mockDisconnectBtn = { addEventListener: vi.fn() };
@@ -531,7 +548,9 @@ describe("init", () => {
         }),
         decoder: { encoding: "default", decode: vi.fn() },
       };
-      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+      const MockPortClass = vi.fn().mockImplementation(function () {
+        return mockPort;
+      });
 
       const mockConnectBtn = { addEventListener: vi.fn() };
       const mockDisconnectBtn = { addEventListener: vi.fn() };
@@ -587,7 +606,9 @@ describe("init", () => {
         }),
         decoder: { encoding: "default", decode: vi.fn() },
       };
-      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+      const MockPortClass = vi.fn().mockImplementation(function () {
+        return mockPort;
+      });
 
       const mockConnectBtn = { addEventListener: vi.fn() };
       const mockDisconnectBtn = { addEventListener: vi.fn() };
@@ -637,7 +658,9 @@ describe("init", () => {
         }),
         decoder: { encoding: "utf-8", decode: vi.fn() },
       };
-      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+      const MockPortClass = vi.fn().mockImplementation(function () {
+        return mockPort;
+      });
 
       const mockConnectBtn = { addEventListener: vi.fn() };
       const mockDisconnectBtn = { addEventListener: vi.fn() };
@@ -682,7 +705,9 @@ describe("init", () => {
         decoder: { encoding: "utf-8", decode: vi.fn() },
         setSignals: vi.fn(),
       };
-      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+      const MockPortClass = vi.fn().mockImplementation(function () {
+        return mockPort;
+      });
 
       const mockConnectBtn = { addEventListener: vi.fn() };
       const mockDisconnectBtn = { addEventListener: vi.fn() };
@@ -744,7 +769,9 @@ describe("init", () => {
         requestPort: vi.fn(),
         decoder: { encoding: "utf-8", decode: vi.fn() },
       };
-      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+      const MockPortClass = vi.fn().mockImplementation(function () {
+        return mockPort;
+      });
 
       const mockConnectBtn = { addEventListener: vi.fn() };
       const mockDisconnectBtn = { addEventListener: vi.fn() };
@@ -782,7 +809,9 @@ describe("init", () => {
         requestPort: vi.fn(),
         decoder: { encoding: "default", decode: vi.fn() },
       };
-      const MockPortClass = vi.fn().mockImplementation(() => mockPort);
+      const MockPortClass = vi.fn().mockImplementation(function () {
+        return mockPort;
+      });
 
       const mockConnectBtn = { addEventListener: vi.fn() };
       const mockDisconnectBtn = { addEventListener: vi.fn() };

@@ -65,6 +65,8 @@ package.json (dev only)
   - Prettier format check
   - Vitest unit tests with coverage
 - CI must fail if linting, formatting, or tests fail.
+- Use Node.js 24 and `npm ci` to reproduce the CI dependency tree.
+- Update `vitest` and `@vitest/coverage-v8` together; their versions must match.
 
 ---
 
