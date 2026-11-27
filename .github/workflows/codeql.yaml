@@ -67,7 +67,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: 26
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL

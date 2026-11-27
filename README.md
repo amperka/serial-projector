@@ -39,7 +39,7 @@ Use buttons at the bottom right corner to adjust application settings.
 
 ## Development
 
-Use Node.js 24 LTS. Install the locked dependencies and run the CI checks:
+Use Node.js 26 LTS. Install the locked dependencies and run the CI checks:
 
 ```bash
 npm ci --no-audit --no-fund
@@ -50,9 +50,15 @@ npm run test -- --run
 ```
 
 Pull requests run these checks and build the production container. Pushes to
-`master` run unit tests on Node.js 24 before building and publishing the image.
+`master` run unit tests on Node.js 26 before building and publishing the image.
+The ESLint security scan also uses Node.js 26 and the locked dependencies,
+including its SARIF formatter.
+
 Keep `vitest` and `@vitest/coverage-v8` on the same version when updating them.
 Dependabot checks the pinned container base images for updates monthly.
+Dependabot groups Vite with its plugins and ESLint with its configuration and
+plugins so their peer dependencies can be updated together. ESLint 10 is deferred
+until `eslint-plugin-import` supports it; do not bypass peer dependency checks.
 
 ## Authors and License
 
