@@ -1,7 +1,4 @@
-ARG NODE_IMAGE=node:lts-alpine
-ARG ANGIE_IMAGE=docker.angie.software/angie:1.12.2-minimal
-
-FROM ${NODE_IMAGE} AS build
+FROM node:24.22.3-alpine3.24 AS build
 
 WORKDIR /build
 COPY package.json package-lock.json ./
@@ -13,16 +10,13 @@ COPY src/ ./src/
 COPY public/ ./public/
 RUN npm run build
 
-FROM ${ANGIE_IMAGE}
+FROM docker.angie.software/angie:1.12.6-minimal
 
 LABEL org.opencontainers.image.title="projector.amperka.ru" \
       org.opencontainers.image.description="Serial Projector static site" \
       org.opencontainers.image.source="https://github.com/amperka/serial-projector"
 
-# The stock server in the image listens on 80 and would serve its own stub
-# page, drop it.
-RUN rm -f /etc/angie/http.d/default.conf
-COPY deploy/angie.conf /etc/angie/http.d/site.conf
+COPY deploy/angie.conf /etc/angie/http.d/default.conf
 COPY --from=build /build/dist /srv/serial-projector/site
 
 EXPOSE 8080

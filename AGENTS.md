@@ -66,6 +66,7 @@ package.json (dev only)
   - Vitest unit tests with coverage
 - CI must fail if linting, formatting, or tests fail.
 - Use Node.js 24 and `npm ci` to reproduce the CI dependency tree.
+- Pin container base images to exact version tags in `FROM` so Dependabot can update them.
 - Update `vitest` and `@vitest/coverage-v8` together; their versions must match.
 
 ---
