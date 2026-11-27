@@ -52,6 +52,7 @@ npm run test -- --run
 Pull requests run these checks and build the production container. Pushes to
 `master` run unit tests on Node.js 24 before building and publishing the image.
 Keep `vitest` and `@vitest/coverage-v8` on the same version when updating them.
+Dependabot checks the pinned container base images for updates monthly.
 
 ## Authors and License
 
